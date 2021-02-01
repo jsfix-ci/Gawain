@@ -7,7 +7,7 @@ module.exports = {
     jest: true,
   },
   parser: "@typescript-eslint/parser",
-  plugins: ["react", "react-hooks", "@typescript-eslint", "@emotion"],
+  plugins: ["react", "react-hooks", "@typescript-eslint"],
   extends: [
     "alloy",
     "alloy/react",

@@ -8,7 +8,6 @@ module.exports = function (api) {
   const plugins = [
     "@babel/proposal-class-properties",
     "@babel/proposal-object-rest-spread",
-    "@emotion",
     ["@babel/plugin-transform-runtime", { useESModules: true }],
   ];
 

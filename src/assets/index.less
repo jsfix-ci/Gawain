@@ -1,0 +1,40 @@
+* {
+  box-sizing: border-box;
+}
+
+// AutoComplete
+@prefix:~ 'f-autocomplete';
+.@{prefix}-input {
+  padding: 5px;
+}
+
+// Dropdown
+@dropdown-prefix:~ 'f-dropdown';
+.@{dropdown-prefix}-wrapper{
+  border: 1px lightgray solid;
+  max-height: 150px;
+  width: 100%;
+  overflow-y: scroll;
+  background-color: white;
+}
+
+.@{dropdown-prefix}-option {
+  padding: 4px 16px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  &:hover {
+    background-color: darkcyan;
+  }
+}
+
+.@{dropdown-prefix}-option-disabled {
+  cursor: not-allowed;
+  background-color: lightgray;
+}
+
+.@{dropdown-prefix}-option-selected {
+  background-color: lightskyblue !important;
+}
