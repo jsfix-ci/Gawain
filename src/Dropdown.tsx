@@ -11,8 +11,10 @@ export interface DropdownProps {
   options?: OptionData[];
   notFoundContent?: React.ReactNode;
   point: { top: number; left: number; width: number };
-  onSelect: (selectedValue: number | string) => void;
   selectedValue?: number | string;
+
+  // Events
+  onSelect: (value: string | number, option: OptionData) => void;
 }
 
 export default function Dropdown(props: DropdownProps) {
@@ -32,11 +34,12 @@ export default function Dropdown(props: DropdownProps) {
 
   const onClickOption = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    value: number | string
+    value: string | number,
+    option: OptionData
   ) => {
     e.preventDefault();
     setSelectedValue(value);
-    onSelect(value);
+    onSelect(value, option);
   };
 
   const renderOptions = (options: OptionData[]) => {
@@ -49,7 +52,7 @@ export default function Dropdown(props: DropdownProps) {
         <div
           className={optionClassName}
           key={o.key || o.value}
-          onMouseDown={(e) => onClickOption(e, o.value)}
+          onMouseDown={(e) => onClickOption(e, o.value, o)}
         >
           {o.label || o.value}
         </div>

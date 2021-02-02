@@ -1,4 +1,6 @@
+/* eslint-disable no-console */
 import React, { useState } from "react";
+import { action } from "@storybook/addon-actions";
 
 import "../src/assets/index.less";
 import AutoComplete from "../src";
@@ -14,10 +16,13 @@ const mockVal = (str: string, repeat = 1) => {
     value: str.repeat(repeat),
   };
 };
-export const basicUsage = () => {
+
+export function Basic() {
   const [options, setOptions] = useState<{ value: string }[]>([]);
+  const [value, setValue] = useState<number | string>("");
 
   const onSearch = (searchText: string) => {
+    action("onSearch")(searchText);
     setOptions(
       !searchText
         ? []
@@ -27,34 +32,45 @@ export const basicUsage = () => {
             mockVal(searchText, 3),
             mockVal(searchText, 4),
             mockVal(searchText, 5),
-            mockVal(searchText, 6),
           ]
     );
+  };
+
+  const onSelect = (data: string | number) => {
+    action("onSelect")(data);
+    console.log("onSelect", data);
+  };
+
+  const onChange = (data: string | number) => {
+    action("onChange")(data);
+    setValue(data);
   };
 
   return (
     <div>
       <AutoComplete
-        placeholder="input here"
         options={options}
-        onSearch={onSearch}
         style={{ width: 200 }}
+        onSearch={onSearch}
+        onSelect={onSelect}
+        placeholder="input here"
       />
       <br />
       <br />
       <AutoComplete
-        placeholder="control mode"
+        value={value}
         options={options}
-        onSearch={onSearch}
         style={{ width: 200 }}
+        onSearch={onSearch}
+        onSelect={onSelect}
+        onChange={onChange}
+        placeholder="control mode"
       />
     </div>
   );
-};
+}
 
-basicUsage.storyName = "基本使用";
-basicUsage.parameters = {
-  viewMode: "story",
-  docs: { disable: true, hide: true },
+Basic.storyName = "基本使用";
+Basic.parameters = {
   controls: { hideNoControlsWarning: true },
 };

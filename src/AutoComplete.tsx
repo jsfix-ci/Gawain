@@ -5,21 +5,33 @@ import { getPosition } from "./utils";
 import Dropdown, { OptionData } from "./Dropdown";
 
 export interface AutoCompleteProps {
+  autoFocus?: boolean;
   placeholder?: string;
   options?: OptionData[];
-  onSearch?: (searchText: string) => void;
   visible?: boolean;
   children?: React.ReactElement;
   style?: React.CSSProperties;
-  autoFocus?: boolean;
+  value?: string | number;
+  onChange?: (value: string | number) => void;
+  onSearch?: (value: string) => void;
+  onSelect?: (value: string | number, option: OptionData) => void;
 }
 
 export default function AutoComplete(props: AutoCompleteProps) {
-  const { placeholder, style, options, onSearch, autoFocus } = props;
+  const {
+    placeholder,
+    style,
+    options,
+    autoFocus,
+    value = "",
+    onSearch,
+    onSelect,
+    onChange,
+  } = props;
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isInputting, setIsInputting] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState(value);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -33,42 +45,44 @@ export default function AutoComplete(props: AutoCompleteProps) {
     if (!isInputting) {
       setIsInputting(true);
     }
-    if (onSearch) {
-      onSearch(e.target.value);
-    }
 
     if (!e.target.value && dropdownVisible) {
       setDropdownVisible(false);
     } else if (e.target.value && !dropdownVisible) {
       setDropdownVisible(true);
     }
+
+    if (onChange) {
+      onChange(e.currentTarget.value);
+    }
   };
+
   const onInputFocus = () => {
     if (selectedValue || inputRef.current?.value) {
       setDropdownVisible(true);
     }
   };
-  const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    // setDropdownVisible(false);
+  const onInputBlur = () => {
+    setDropdownVisible(false);
+  };
+  const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
+    if (onSearch) {
+      onSearch(e.currentTarget.value);
+    }
   };
 
-  const onSelectValue = (value: string | number) => {
+  const onSelectOption = (value: string | number, option: OptionData) => {
     setIsInputting(false);
     setDropdownVisible(false);
     setSelectedValue(String(value));
+    if (onSelect) {
+      onSelect(value, option);
+    }
+    if (onChange) {
+      onChange(value);
+    }
   };
 
-  const getComponent = () => {
-    return (
-      <Dropdown
-        options={options}
-        point={getMyPosition()}
-        onSelect={onSelectValue}
-        selectedValue={selectedValue}
-      />
-    );
-  };
   const getContainer = () => {
     const container = document.createElement("div");
     container.style.position = "absolute";
@@ -79,22 +93,34 @@ export default function AutoComplete(props: AutoCompleteProps) {
     mountNode.appendChild(container);
     return container;
   };
-
+  const getComponent = () => {
+    return (
+      <Dropdown
+        options={options}
+        point={getMyPosition()}
+        onSelect={onSelectOption}
+        selectedValue={selectedValue}
+      />
+    );
+  };
   const dropdown = dropdownVisible ? (
     <Portal getContainer={getContainer}>{getComponent()}</Portal>
   ) : null;
 
+  const isControlMode = !!value;
+
   return (
     <div style={style}>
       <input
-        autoFocus={autoFocus}
         className="f-autocomplete-input"
         ref={inputRef}
+        autoFocus={autoFocus}
+        value={isInputting ? undefined : selectedValue}
+        placeholder={placeholder}
         onFocus={onInputFocus}
         onBlur={onInputBlur}
         onChange={onInputChange}
-        value={isInputting ? undefined : selectedValue}
-        placeholder={placeholder}
+        onInput={onInputInput} // onSearch
       />
       {dropdown}
     </div>
