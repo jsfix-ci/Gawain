@@ -4,8 +4,50 @@
 
 // AutoComplete
 @prefix:~ 'f-autocomplete';
+.@{prefix}-input-wrapper {
+  display: inline-block;
+  position: relative;
+  .@{prefix}-clear-icon {
+    display: none;
+  }
+  &:hover {
+    .@{prefix}-clear-icon {
+      display: inline-flex;
+    } 
+  }
+ 
+}
 .@{prefix}-input {
-  padding: 5px;
+  padding: 5px 10px;
+}
+.@{prefix}-clear-icon{
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  background: rgba(0,0,0,.25);
+  border-radius: 100%;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  > span {
+    display: inline-block;
+    width: 8px;
+    height: 2px;
+    background: white;
+    transform: rotate(45deg);
+    &::after {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 2px;
+      background: white;
+      transform: rotate(-90deg);
+    }
+  }
 }
 
 // Dropdown
