@@ -12,14 +12,13 @@ export function getPosition(el: Element) {
   return pos;
 }
 
-export function contains(root: any, n: any) {
-  let node = n;
-  while (node) {
-    if (node === root) {
-      return true;
-    }
-    node = node.parentNode;
+export function onResize(selector: string, callback: () => void) {
+  const observerNode = document.querySelector(selector);
+  const mutationObserver = new MutationObserver(callback);
+  if (observerNode) {
+    mutationObserver.observe(observerNode, {
+      attributes: true,
+      attributeFilter: ["style"],
+    });
   }
-
-  return false;
 }

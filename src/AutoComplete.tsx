@@ -1,17 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 
 import Portal from "./Portal";
-import { getPosition } from "./utils";
+import { getPosition, onResize } from "./utils";
 import Dropdown, { OptionData } from "./Dropdown";
 
 export interface AutoCompleteProps {
   allowClear?: boolean;
   autoFocus?: boolean;
+  children?: React.ReactElement;
 
   placeholder?: string;
   options?: OptionData[];
   visible?: boolean;
-  children?: React.ReactElement;
   style?: React.CSSProperties;
   value?: string | number;
   onChange?: (value: string | number) => void;
@@ -22,6 +22,7 @@ export interface AutoCompleteProps {
 export default function AutoComplete(props: AutoCompleteProps) {
   const {
     allowClear,
+    children,
     placeholder,
     style,
     options,
@@ -35,6 +36,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [isInputting, setIsInputting] = useState(false);
   const [inputValue, setInputValue] = useState(value);
+  const [position, setPosition] = useState({ left: 0, top: 0, width: 200 });
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,9 +57,9 @@ export default function AutoComplete(props: AutoCompleteProps) {
       setDropdownVisible(true);
     }
   };
+
   const onInputBlur = () => {
     setDropdownVisible(false);
-    setIsInputting(false);
   };
 
   const onInputClick = () => {
@@ -83,10 +85,18 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   // UI
+  useLayoutEffect(() => {
+    if (inputNode.type === "textarea")
+      onResize("#f-autocomplete", getMyPosition);
+  }, []);
+  useEffect(() => {
+    getMyPosition();
+  }, []);
+
   const getMyPosition = () => {
-    return inputRef.current
-      ? getPosition(inputRef.current)
-      : { left: 0, top: 0, width: 200 };
+    inputRef.current
+      ? setPosition(getPosition(inputRef.current))
+      : setPosition({ left: 0, top: 0, width: 200 });
   };
   const getContainer = () => {
     const container = document.createElement("div");
@@ -102,7 +112,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     return (
       <Dropdown
         options={options}
-        point={getMyPosition()}
+        point={position}
         onSelect={onSelectOption}
         selectedValue={inputValue}
       />
@@ -119,20 +129,24 @@ export default function AutoComplete(props: AutoCompleteProps) {
       </div>
     ) : null;
 
+  let inputNode = children || <input />;
+  inputNode = React.cloneElement(inputNode, {
+    id: "f-autocomplete",
+    className: `f-autocomplete-${inputNode.type}`,
+    ref: inputRef,
+    autoFocus,
+    value: isInputting ? undefined : inputValue,
+    placeholder,
+    onMouseDown: onInputClick,
+    onFocus: onInputFocus,
+    onBlur: onInputBlur,
+    onInput: onInputInput,
+  });
+
   return (
     <div style={style}>
       <div className="f-autocomplete-input-wrapper">
-        <input
-          className="f-autocomplete-input"
-          ref={inputRef}
-          autoFocus={autoFocus}
-          value={isInputting ? undefined : inputValue}
-          placeholder={placeholder}
-          onMouseDown={onInputClick}
-          onFocus={onInputFocus}
-          onBlur={onInputBlur}
-          onInput={onInputInput} // onSearch
-        />
+        {inputNode}
         {clearIcon}
       </div>
       {dropdown}
