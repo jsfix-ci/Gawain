@@ -8,6 +8,7 @@ export interface OptionData {
   value: string | number;
 }
 export interface DropdownProps {
+  defaultActiveFirstOption?: boolean;
   options?: OptionData[];
   notFoundContent?: React.ReactNode;
   point: { top: number; left: number; width: number };
@@ -19,6 +20,7 @@ export interface DropdownProps {
 
 export default function Dropdown(props: DropdownProps) {
   const {
+    defaultActiveFirstOption = true,
     options,
     notFoundContent,
     point,
@@ -43,10 +45,13 @@ export default function Dropdown(props: DropdownProps) {
   };
 
   const renderOptions = (options: OptionData[]) => {
-    return options.map((o) => {
+    return options.map((o, index) => {
       const optionClassName = classNames("f-dropdown-option", {
         "f-dropdown-option-disabled": !!o.disabled,
-        "f-dropdown-option-selected": selectedValue === o.value,
+        "f-dropdown-option-selected":
+          index === 0 && defaultActiveFirstOption
+            ? true
+            : selectedValue === o.value,
       });
       return (
         <div

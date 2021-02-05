@@ -8,6 +8,7 @@ export interface AutoCompleteProps {
   allowClear?: boolean;
   autoFocus?: boolean;
   children?: React.ReactElement;
+  defaultActiveFirstOption?: boolean;
 
   placeholder?: string;
   options?: OptionData[];
@@ -21,12 +22,13 @@ export interface AutoCompleteProps {
 
 export default function AutoComplete(props: AutoCompleteProps) {
   const {
-    allowClear,
+    allowClear = false,
+    autoFocus = false,
     children,
+    defaultActiveFirstOption = true,
     placeholder,
     style,
     options,
-    autoFocus,
     value = "",
     onSearch,
     onSelect,
@@ -115,6 +117,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
         point={position}
         onSelect={onSelectOption}
         selectedValue={inputValue}
+        defaultActiveFirstOption={defaultActiveFirstOption}
       />
     );
   };

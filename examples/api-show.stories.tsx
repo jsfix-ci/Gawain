@@ -73,6 +73,19 @@ export function APIShow() {
           placeholder="input here"
         />
       </div>
+      <br />
+      <div>
+        <label>defaultActiveFirstOption:false</label>
+        <AutoComplete
+          defaultActiveFirstOption={false}
+          options={options}
+          style={{ width: 200 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
     </div>
   );
 }
