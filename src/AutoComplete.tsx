@@ -44,7 +44,10 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   //  Events
   const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
-    if (!isInputting) setIsInputting(true);
+    if (!isInputting) {
+      setInputValue("");
+      setIsInputting(true);
+    }
     if (onSearch) onSearch(e.currentTarget.value);
     if (onChange) onChange(e.currentTarget.value);
     if (!e.currentTarget.value && dropdownVisible) {
@@ -135,6 +138,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   let inputNode = children || <input />;
   inputNode = React.cloneElement(inputNode, {
     id: "f-autocomplete",
+    autocomplete: "off",
     className: `f-autocomplete-${inputNode.type}`,
     ref: inputRef,
     autoFocus,

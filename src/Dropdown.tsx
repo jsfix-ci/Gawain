@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 
 export interface OptionData {
@@ -28,8 +28,6 @@ export default function Dropdown(props: DropdownProps) {
     selectedValue: sValue = "",
   } = props;
 
-  const [selectedValue, setSelectedValue] = useState<number | string>(sValue);
-
   // if (options.length === 0) {
   //   return <div>{notFoundContent}</div>;
   // }
@@ -40,18 +38,19 @@ export default function Dropdown(props: DropdownProps) {
     option: OptionData
   ) => {
     e.preventDefault();
-    setSelectedValue(value);
     onSelect(value, option);
   };
 
+  const hasSelected = !!sValue;
   const renderOptions = (options: OptionData[]) => {
     return options.map((o, index) => {
       const optionClassName = classNames("f-dropdown-option", {
         "f-dropdown-option-disabled": !!o.disabled,
-        "f-dropdown-option-selected":
-          index === 0 && defaultActiveFirstOption
-            ? true
-            : selectedValue === o.value,
+        "f-dropdown-option-selected": hasSelected
+          ? sValue === o.value
+          : index === 0 && defaultActiveFirstOption
+          ? true
+          : false,
       });
       return (
         <div
