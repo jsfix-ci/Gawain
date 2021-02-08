@@ -9,6 +9,7 @@ export interface AutoCompleteProps {
   autoFocus?: boolean;
   children?: React.ReactElement;
   defaultActiveFirstOption?: boolean;
+  defaultOpen?: boolean;
 
   placeholder?: string;
   options?: OptionData[];
@@ -26,9 +27,10 @@ export default function AutoComplete(props: AutoCompleteProps) {
     autoFocus = false,
     children,
     defaultActiveFirstOption = true,
+    defaultOpen,
     placeholder,
     style,
-    options,
+    options = [],
     value = "",
     onSearch,
     onSelect,
@@ -57,18 +59,14 @@ export default function AutoComplete(props: AutoCompleteProps) {
     }
   };
 
-  const onInputFocus = () => {
-    if (inputValue || inputRef.current?.value) {
-      setDropdownVisible(true);
-    }
-  };
-
   const onInputBlur = () => {
     setDropdownVisible(false);
   };
 
   const onInputClick = () => {
-    onInputFocus();
+    if (inputValue || inputRef.current?.value || options.length > 0) {
+      setDropdownVisible(true);
+    }
   };
 
   const onSelectOption = (value: string | number, option: OptionData) => {
@@ -124,9 +122,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
       />
     );
   };
-  const dropdown = dropdownVisible ? (
-    <Portal getContainer={getContainer}>{getComponent()}</Portal>
-  ) : null;
+
+  const forceOpen = defaultOpen && options.length > 0;
+
+  const dropdown =
+    dropdownVisible || forceOpen ? (
+      <Portal getContainer={getContainer}>{getComponent()}</Portal>
+    ) : null;
 
   const clearIcon =
     allowClear && inputRef.current?.value ? (
@@ -138,14 +140,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
   let inputNode = children || <input />;
   inputNode = React.cloneElement(inputNode, {
     id: "f-autocomplete",
-    autocomplete: "off",
+    autoComplete: "off",
     className: `f-autocomplete-${inputNode.type}`,
     ref: inputRef,
     autoFocus,
     value: isInputting ? undefined : inputValue,
     placeholder,
     onMouseDown: onInputClick,
-    onFocus: onInputFocus,
     onBlur: onInputBlur,
     onInput: onInputInput,
   });

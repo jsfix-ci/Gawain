@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef } from "react";
 import classNames from "classnames";
 
 export interface OptionData {
@@ -10,7 +10,6 @@ export interface OptionData {
 export interface DropdownProps {
   defaultActiveFirstOption?: boolean;
   options?: OptionData[];
-  notFoundContent?: React.ReactNode;
   point: { top: number; left: number; width: number };
   selectedValue?: number | string;
 
@@ -21,16 +20,16 @@ export interface DropdownProps {
 export default function Dropdown(props: DropdownProps) {
   const {
     defaultActiveFirstOption = true,
-    options,
-    notFoundContent,
+    options = [],
     point,
     onSelect,
     selectedValue: sValue = "",
   } = props;
 
-  // if (options.length === 0) {
-  //   return <div>{notFoundContent}</div>;
-  // }
+  const hasInitOption = useRef<undefined | boolean>(undefined);
+  if (typeof hasInitOption.current !== "boolean") {
+    hasInitOption.current = options?.length > 0;
+  }
 
   const onClickOption = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -48,7 +47,7 @@ export default function Dropdown(props: DropdownProps) {
         "f-dropdown-option-disabled": !!o.disabled,
         "f-dropdown-option-selected": hasSelected
           ? sValue === o.value
-          : index === 0 && defaultActiveFirstOption
+          : !hasInitOption.current && defaultActiveFirstOption && index === 0
           ? true
           : false,
       });
