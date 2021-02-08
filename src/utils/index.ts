@@ -1,3 +1,5 @@
+import _reactDom from "react-dom";
+
 export function getPosition(el: Element) {
   const rectObject = el.getBoundingClientRect();
   const pos = {
@@ -21,4 +23,18 @@ export function onResize(selector: string, callback: () => void) {
       attributeFilter: ["style"],
     });
   }
+}
+
+export function returnDocument(element?: HTMLElement) {
+  if (element) {
+    return element.ownerDocument;
+  }
+  return window.document;
+}
+
+export function contains(root: Node | null | undefined, n: Node | null) {
+  if (!root) {
+    return false;
+  }
+  return root.contains(n);
 }

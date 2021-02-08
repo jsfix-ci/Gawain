@@ -65,7 +65,7 @@ export function APIShow() {
         <label>autoFocus</label>
         <AutoComplete
           autoFocus
-          options={options}
+          options={[{ label: 1, value: 1 }]}
           style={{ width: 200 }}
           onSearch={onSearch}
           onSelect={onSelect}
@@ -79,6 +79,34 @@ export function APIShow() {
         <AutoComplete
           defaultActiveFirstOption={false}
           options={options}
+          style={{ width: 200 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
+      <br />
+      <div>
+        <label>defaultOpen:true</label>
+        <AutoComplete
+          defaultOpen
+          options={[{ label: 1, value: 1 }]}
+          style={{ width: 200 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
+      <br />
+      <br />
+      <br />
+      <div>
+        <label>defaultOpen:true</label>
+        <AutoComplete
+          defaultOpen
+          options={[{ label: 1, value: 1 }]}
           style={{ width: 200 }}
           onSearch={onSearch}
           onSelect={onSelect}

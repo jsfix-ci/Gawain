@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 
 import Portal from "./Portal";
-import { getPosition, onResize } from "./utils";
 import Dropdown, { OptionData } from "./Dropdown";
+import { getPosition, onResize, returnDocument, contains } from "./utils";
 
 export interface AutoCompleteProps {
   allowClear?: boolean;
@@ -37,12 +37,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
     onChange,
   } = props;
 
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
   const [isInputting, setIsInputting] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [position, setPosition] = useState({ left: 0, top: 0, width: 200 });
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>();
+  const optionRef = useRef(options);
 
   //  Events
   const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -64,14 +65,14 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   const onInputClick = () => {
-    if (inputValue || inputRef.current?.value || options.length > 0) {
+    // maybe bug
+    if (inputValue || inputRef.current?.value || optionRef.current.length > 0) {
       setDropdownVisible(true);
     }
   };
 
   const onSelectOption = (value: string | number, option: OptionData) => {
     setIsInputting(false);
-    setDropdownVisible(false);
     setInputValue(value);
     if (onSelect) onSelect(value, option);
     if (onChange) onChange(value);
@@ -84,6 +85,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
       if (onChange) onChange("");
       setDropdownVisible(false);
       setInputValue("");
+      optionRef.current = [];
+    }
+  };
+  const onDocumentClick = (event: MouseEvent) => {
+    const { target } = event;
+    if (target instanceof Node && !contains(inputRef.current, target)) {
+      setDropdownVisible(false);
     }
   };
 
@@ -94,6 +102,11 @@ export default function AutoComplete(props: AutoCompleteProps) {
   }, []);
   useEffect(() => {
     getMyPosition();
+  }, []);
+
+  useEffect(() => {
+    const currentDocument = returnDocument(inputRef.current);
+    currentDocument.addEventListener("mousedown", onDocumentClick);
   }, []);
 
   const getMyPosition = () => {
@@ -123,12 +136,9 @@ export default function AutoComplete(props: AutoCompleteProps) {
     );
   };
 
-  const forceOpen = defaultOpen && options.length > 0;
-
-  const dropdown =
-    dropdownVisible || forceOpen ? (
-      <Portal getContainer={getContainer}>{getComponent()}</Portal>
-    ) : null;
+  const dropdown = dropdownVisible ? (
+    <Portal getContainer={getContainer}>{getComponent()}</Portal>
+  ) : null;
 
   const clearIcon =
     allowClear && inputRef.current?.value ? (
