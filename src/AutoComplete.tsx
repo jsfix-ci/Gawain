@@ -11,6 +11,7 @@ export interface AutoCompleteProps {
   defaultActiveFirstOption?: boolean;
   defaultOpen?: boolean;
   defaultValue?: string;
+  disabled?: boolean;
 
   placeholder?: string;
   options?: OptionData[];
@@ -30,6 +31,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     defaultActiveFirstOption = true,
     defaultOpen,
     defaultValue,
+    disabled = false,
     placeholder,
     style,
     options = [],
@@ -91,7 +93,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   // UI
   useLayoutEffect(() => {
     if (inputNode.type === "textarea")
-      onResize("#f-autocomplete", getMyPosition);
+      onResize(inputRef.current, getMyPosition);
   }, []);
   useEffect(() => {
     dropdownVisible && getMyPosition();
@@ -144,13 +146,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const isControlMode = !(typeof value === "undefined");
 
   inputNode = React.cloneElement(inputNode, {
-    id: "f-autocomplete",
     autoComplete: "off",
     className: `f-autocomplete-${inputNode.type}`,
     ref: inputRef,
     autoFocus,
     defaultValue: defaultValue,
     ...(isControlMode && { value }),
+    disabled,
     placeholder,
     onMouseDown: onInputClick,
     onBlur: onInputBlur,

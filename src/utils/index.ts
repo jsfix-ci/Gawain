@@ -12,11 +12,10 @@ export function getPosition(el: Element) {
   return pos;
 }
 
-export function onResize(selector: string, callback: () => void) {
-  const observerNode = document.querySelector(selector);
-  const mutationObserver = new MutationObserver(callback);
-  if (observerNode) {
-    mutationObserver.observe(observerNode, {
+export function onResize(selector: Element | undefined, callback: () => void) {
+  if (selector) {
+    const mutationObserver = new MutationObserver(callback);
+    mutationObserver.observe(selector, {
       attributes: true,
       attributeFilter: ["style"],
     });

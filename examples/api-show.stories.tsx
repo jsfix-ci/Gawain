@@ -101,6 +101,19 @@ export function APIShow() {
       </div>
       <br />
       <div>
+        <label>disabled:true</label>
+        <AutoComplete
+          disabled
+          options={[{ label: 1, value: 1 }]}
+          style={{ width: 200 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
+      <br />
+      <div>
         <label>defaultOpen:true</label>
         <AutoComplete
           defaultOpen

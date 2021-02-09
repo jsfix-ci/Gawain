@@ -50,6 +50,19 @@ export const Custom = () => {
           onKeyPress={handleKeyPress}
         />
       </AutoComplete>
+      <AutoComplete
+        options={options}
+        style={{ width: 200 }}
+        onSelect={onSelect}
+        onSearch={handleSearch}
+      >
+        <textarea
+          placeholder="input here"
+          className="custom"
+          style={{ height: 50 }}
+          onKeyPress={handleKeyPress}
+        />
+      </AutoComplete>
     </div>
   );
 };
