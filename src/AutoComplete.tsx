@@ -12,6 +12,7 @@ export interface AutoCompleteProps {
   defaultOpen?: boolean;
   defaultValue?: string;
   disabled?: boolean;
+  dropdownClassName?: string;
 
   placeholder?: string;
   options?: OptionData[];
@@ -32,6 +33,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     defaultOpen,
     defaultValue,
     disabled = false,
+    dropdownClassName,
     placeholder,
     style,
     options = [],
@@ -122,6 +124,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const getComponent = () => {
     return (
       <Dropdown
+        dropdownClassName={dropdownClassName}
         options={options}
         point={position}
         onSelect={onSelectOption}

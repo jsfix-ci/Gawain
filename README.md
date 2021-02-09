@@ -17,5 +17,6 @@ LeetCode Hire 中的题 4 与题 5
 | defaultOpen                 | 是否默认展开下拉菜单                              | boolean                                                                   | -          | ✔    |
 | defaultValue                | 指定默认选中的条目                                | string                                                                    | -          | ✔    |
 | disabled                    | 是否禁用                                          | boolean                                                                   | false      | ✔    |
+| dropdownClassName           | 下拉菜单的 className 属性                         | string                                                                    | -          | ✔    |
 | onChange                    | 选中 option，或 input 的 value 变化时，调用此函数 | (value:string) => void                                                    | -          | ✔    |
 | onSearch                    | 搜索补全项的时候调用                              | (value:string) => void                                                    | -          | ✔    |

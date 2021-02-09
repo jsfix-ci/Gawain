@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
+import "./demo.less";
 import "../src/assets/index.less";
 import AutoComplete from "../src";
 
@@ -104,6 +105,19 @@ export function APIShow() {
         <label>disabled:true</label>
         <AutoComplete
           disabled
+          options={[{ label: 1, value: 1 }]}
+          style={{ width: 200 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
+      <br />
+      <div>
+        <label>dropdownClassName:test-a</label>
+        <AutoComplete
+          dropdownClassName="test-a"
           options={[{ label: 1, value: 1 }]}
           style={{ width: 200 }}
           onSearch={onSearch}

@@ -12,6 +12,7 @@ export interface DropdownProps {
   options?: OptionData[];
   point: { top: number; left: number; width: number };
   selectedValue?: number | string;
+  dropdownClassName?: string;
 
   // Events
   onSelect: (value: string | number, option: OptionData) => void;
@@ -22,8 +23,9 @@ export default function Dropdown(props: DropdownProps) {
     defaultActiveFirstOption = true,
     options = [],
     point,
-    onSelect,
+    dropdownClassName,
     selectedValue: sValue = "",
+    onSelect,
   } = props;
 
   const hasInitOption = useRef<undefined | boolean>(undefined);
@@ -68,8 +70,13 @@ export default function Dropdown(props: DropdownProps) {
     position: "absolute",
   };
 
+  const _dropdownClassName = classNames(
+    "f-dropdown-wrapper",
+    dropdownClassName
+  );
+
   return (
-    <div className="f-dropdown-wrapper" style={style}>
+    <div className={_dropdownClassName} style={style}>
       {renderOptions(options || [])}
     </div>
   );
