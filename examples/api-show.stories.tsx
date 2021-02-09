@@ -88,10 +88,10 @@ export function APIShow() {
       </div>
       <br />
       <div>
-        <label>defaultOpen:true</label>
+        <label>defaultValue: 2</label>
         <AutoComplete
-          defaultOpen
-          options={[{ label: 1, value: 1 }]}
+          options={options}
+          defaultValue="2"
           style={{ width: 200 }}
           onSearch={onSearch}
           onSelect={onSelect}
@@ -99,8 +99,6 @@ export function APIShow() {
           placeholder="input here"
         />
       </div>
-      <br />
-      <br />
       <br />
       <div>
         <label>defaultOpen:true</label>
@@ -114,6 +112,7 @@ export function APIShow() {
           placeholder="input here"
         />
       </div>
+      <br />
     </div>
   );
 }

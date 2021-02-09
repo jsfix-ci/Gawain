@@ -15,5 +15,6 @@ LeetCode Hire 中的题 4 与题 5
 | children (自定义输入框)     | 自定义输入框                                      | HTMLInputElement \| HTMLTextAreaElement \| React.ReactElement<InputProps> | \<input /> | ✔    |
 | defaultActiveFirstOption    | 是否默认高亮第一个选项                            | boolean                                                                   | true       | ✔    |
 | defaultOpen                 | 是否默认展开下拉菜单                              | boolean                                                                   | -          | ✔    |
+| defaultValue                | 指定默认选中的条目                                | string                                                                    | -          | ✔    |
 | onChange                    | 选中 option，或 input 的 value 变化时，调用此函数 | (value:string) => void                                                    | -          | ✔    |
 | onSearch                    | 搜索补全项的时候调用                              | (value:string) => void                                                    | -          | ✔    |

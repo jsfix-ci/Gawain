@@ -10,6 +10,7 @@ export interface AutoCompleteProps {
   children?: React.ReactElement;
   defaultActiveFirstOption?: boolean;
   defaultOpen?: boolean;
+  defaultValue?: string;
 
   placeholder?: string;
   options?: OptionData[];
@@ -28,18 +29,17 @@ export default function AutoComplete(props: AutoCompleteProps) {
     children,
     defaultActiveFirstOption = true,
     defaultOpen,
+    defaultValue,
     placeholder,
     style,
     options = [],
-    value = "",
+    value,
     onSearch,
     onSelect,
     onChange,
   } = props;
 
   const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
-  const [isInputting, setIsInputting] = useState(false);
-  const [inputValue, setInputValue] = useState(value);
   const [position, setPosition] = useState({ left: 0, top: 0, width: 200 });
 
   const inputRef = useRef<HTMLInputElement>();
@@ -47,10 +47,6 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   //  Events
   const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
-    if (!isInputting) {
-      setInputValue("");
-      setIsInputting(true);
-    }
     if (onSearch) onSearch(e.currentTarget.value);
     if (onChange) onChange(e.currentTarget.value);
     if (!e.currentTarget.value && dropdownVisible) {
@@ -65,15 +61,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   const onInputClick = () => {
-    // maybe bug
-    if (inputValue || inputRef.current?.value || optionRef.current.length > 0) {
+    if (inputRef.current?.value || optionRef.current.length > 0) {
       setDropdownVisible(true);
     }
   };
 
   const onSelectOption = (value: string | number, option: OptionData) => {
-    setIsInputting(false);
-    setInputValue(value);
+    inputRef.current!.value = String(value);
     if (onSelect) onSelect(value, option);
     if (onChange) onChange(value);
   };
@@ -84,7 +78,6 @@ export default function AutoComplete(props: AutoCompleteProps) {
       inputRef.current.value = "";
       if (onChange) onChange("");
       setDropdownVisible(false);
-      setInputValue("");
       optionRef.current = [];
     }
   };
@@ -130,7 +123,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
         options={options}
         point={position}
         onSelect={onSelectOption}
-        selectedValue={inputValue}
+        selectedValue={inputRef.current?.value}
         defaultActiveFirstOption={defaultActiveFirstOption}
       />
     );
@@ -148,13 +141,16 @@ export default function AutoComplete(props: AutoCompleteProps) {
     ) : null;
 
   let inputNode = children || <input />;
+  const isControlMode = !(typeof value === "undefined");
+
   inputNode = React.cloneElement(inputNode, {
     id: "f-autocomplete",
     autoComplete: "off",
     className: `f-autocomplete-${inputNode.type}`,
     ref: inputRef,
     autoFocus,
-    value: isInputting ? undefined : inputValue,
+    defaultValue: defaultValue,
+    ...(isControlMode && { value }),
     placeholder,
     onMouseDown: onInputClick,
     onBlur: onInputBlur,
