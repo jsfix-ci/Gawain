@@ -1,5 +1,3 @@
-import _reactDom from "react-dom";
-
 export function getPosition(el: Element) {
   const rectObject = el.getBoundingClientRect();
   const pos = {

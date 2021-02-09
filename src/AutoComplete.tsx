@@ -40,7 +40,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   } = props;
 
   const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
-  const [position, setPosition] = useState({ left: 0, top: 0, width: 200 });
+  const [position, setPosition] = useState({ left: 0, top: -100, width: 200 });
 
   const inputRef = useRef<HTMLInputElement>();
   const optionRef = useRef(options);
@@ -94,8 +94,8 @@ export default function AutoComplete(props: AutoCompleteProps) {
       onResize("#f-autocomplete", getMyPosition);
   }, []);
   useEffect(() => {
-    getMyPosition();
-  }, []);
+    dropdownVisible && getMyPosition();
+  }, [dropdownVisible]);
 
   useEffect(() => {
     const currentDocument = returnDocument(inputRef.current);
@@ -105,7 +105,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const getMyPosition = () => {
     inputRef.current
       ? setPosition(getPosition(inputRef.current))
-      : setPosition({ left: 0, top: 0, width: 200 });
+      : setPosition({ left: 0, top: -100, width: 200 });
   };
   const getContainer = () => {
     const container = document.createElement("div");
