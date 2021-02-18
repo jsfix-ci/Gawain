@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
 import "../src/assets/index.less";
-import AutoComplete from "../src";
+import AutoComplete, { OptionData } from "../src";
 
 // This default export determines where your story goes in the story list
 export default {
@@ -26,13 +26,7 @@ export function Basic() {
     setOptions(
       !searchText
         ? []
-        : [
-            mockVal(searchText),
-            mockVal(searchText, 2),
-            mockVal(searchText, 3),
-            mockVal(searchText, 4),
-            mockVal(searchText, 5),
-          ]
+        : [mockVal(searchText), mockVal(searchText, 2), mockVal(searchText, 3)]
     );
   };
 
@@ -46,9 +40,14 @@ export function Basic() {
     setValue(data);
   };
 
+  const test = (a: string | number, b: OptionData) => {
+    return false;
+  };
+
   return (
     <div>
       <AutoComplete
+        filterOption={test}
         options={options}
         style={{ width: 200 }}
         onSearch={onSearch}

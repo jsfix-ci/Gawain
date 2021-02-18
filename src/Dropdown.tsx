@@ -84,9 +84,11 @@ export default function Dropdown(props: DropdownProps) {
     dropdownClassName
   );
 
-  return (
+  const needRender = options.length > 0;
+
+  return needRender ? (
     <div className={_dropdownClassName} style={style}>
       {renderOptions(options || [])}
     </div>
-  );
+  ) : null;
 }

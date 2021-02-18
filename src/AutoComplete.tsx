@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+} from "react";
 
 import Portal from "./Portal";
 import Dropdown, { OptionData } from "./Dropdown";
@@ -14,6 +20,7 @@ export interface AutoCompleteProps {
   disabled?: boolean;
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
+  filterOption?: (inputValue: string | number, option: OptionData) => boolean;
 
   placeholder?: string;
   options?: OptionData[];
@@ -36,6 +43,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     disabled = false,
     dropdownClassName,
     dropdownMatchSelectWidth = true,
+    filterOption,
     placeholder,
     style,
     options = [],
@@ -127,12 +135,22 @@ export default function AutoComplete(props: AutoCompleteProps) {
     mountNode.appendChild(container);
     return container;
   };
+
+  const filteredOptions = useMemo(() => {
+    // 多个组件存在时会额外触发
+    return typeof filterOption !== "undefined"
+      ? options.filter((o) =>
+          filterOption(inputRef.current ? inputRef.current.value : "", o)
+        )
+      : options;
+  }, [options]);
+
   const getComponent = () => {
     return (
       <Dropdown
         dropdownClassName={dropdownClassName}
         dropdownMatchSelectWidth={dropdownMatchSelectWidth}
-        options={options}
+        options={filteredOptions}
         point={position}
         onSelect={onSelectOption}
         selectedValue={inputRef.current?.value}
