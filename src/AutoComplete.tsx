@@ -13,6 +13,7 @@ export interface AutoCompleteProps {
   defaultValue?: string;
   disabled?: boolean;
   dropdownClassName?: string;
+  dropdownMatchSelectWidth?: boolean | number;
 
   placeholder?: string;
   options?: OptionData[];
@@ -34,6 +35,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     defaultValue,
     disabled = false,
     dropdownClassName,
+    dropdownMatchSelectWidth = true,
     placeholder,
     style,
     options = [],
@@ -44,7 +46,11 @@ export default function AutoComplete(props: AutoCompleteProps) {
   } = props;
 
   const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
-  const [position, setPosition] = useState({ left: 0, top: -100, width: 200 });
+  const [position, setPosition] = useState({
+    left: 0,
+    top: -99999,
+    width: 200,
+  });
 
   const inputRef = useRef<HTMLInputElement>();
   const optionRef = useRef(options);
@@ -125,6 +131,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     return (
       <Dropdown
         dropdownClassName={dropdownClassName}
+        dropdownMatchSelectWidth={dropdownMatchSelectWidth}
         options={options}
         point={position}
         onSelect={onSelectOption}

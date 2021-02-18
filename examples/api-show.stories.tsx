@@ -128,10 +128,36 @@ export function APIShow() {
       </div>
       <br />
       <div>
+        <label>dropdownMatchSelectWidth:false</label>
+        <AutoComplete
+          dropdownMatchSelectWidth={false}
+          options={options}
+          style={{ width: 100 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+        <label>dropdownMatchSelectWidth:200</label>
+        <AutoComplete
+          dropdownMatchSelectWidth={200}
+          options={options}
+          style={{ width: 100 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
+      <br />
+      <div>
         <label>defaultOpen:true</label>
         <AutoComplete
           defaultOpen
-          options={[{ label: 1, value: 1 }]}
+          options={[
+            { label: 1, value: 1 },
+            { label: 2, value: 2 },
+          ]}
           style={{ width: 200 }}
           onSearch={onSearch}
           onSelect={onSelect}

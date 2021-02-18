@@ -13,6 +13,7 @@ export interface DropdownProps {
   point: { top: number; left: number; width: number };
   selectedValue?: number | string;
   dropdownClassName?: string;
+  dropdownMatchSelectWidth?: boolean | number;
 
   // Events
   onSelect: (value: string | number, option: OptionData) => void;
@@ -24,6 +25,7 @@ export default function Dropdown(props: DropdownProps) {
     options = [],
     point,
     dropdownClassName,
+    dropdownMatchSelectWidth,
     selectedValue: sValue = "",
     onSelect,
   } = props;
@@ -65,9 +67,16 @@ export default function Dropdown(props: DropdownProps) {
     });
   };
 
+  const isValidNumber =
+    typeof dropdownMatchSelectWidth === "number" &&
+    dropdownMatchSelectWidth > point.width;
+
   const style: React.CSSProperties = {
     ...point,
     position: "absolute",
+    ...((isValidNumber || !dropdownMatchSelectWidth) && {
+      width: isValidNumber ? (dropdownMatchSelectWidth as number) : "auto",
+    }),
   };
 
   const _dropdownClassName = classNames(
