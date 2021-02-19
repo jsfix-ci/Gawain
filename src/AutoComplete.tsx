@@ -29,6 +29,7 @@ export interface AutoCompleteProps {
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onDropdownVisibleChange?: (open: boolean) => void;
   onChange?: (value: string | number) => void;
+  onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onSearch?: (value: string) => void;
   onSelect?: (value: string | number, option: OptionData) => void;
   style?: React.CSSProperties;
@@ -52,6 +53,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     placeholder,
     onBlur,
     onDropdownVisibleChange,
+    onFocus,
     onSearch,
     onSelect,
     onChange,
@@ -84,6 +86,9 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setDropdownVisible(false);
     if (onBlur) onBlur(e);
+  };
+  const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (onFocus) onFocus(e);
   };
 
   const onInputClick = () => {
@@ -201,6 +206,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     onMouseDown: onInputClick,
     onBlur: onInputBlur,
     onInput: onInputInput,
+    onFocus: onInputFocus,
   });
 
   return (

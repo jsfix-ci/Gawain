@@ -44,6 +44,11 @@ export function Basic() {
     action("onBlur")(e);
     console.log(e);
   };
+  const onFocus = (e: React.FocusEvent) => {
+    action("onFocus")(e);
+    console.log(e);
+  };
+
   const onDropdownVisibleChange = (open: boolean) => {
     console.log(open);
   };
@@ -67,6 +72,7 @@ export function Basic() {
       <br />
       <AutoComplete
         onDropdownVisibleChange={onDropdownVisibleChange}
+        onFocus={onFocus}
         value={value}
         options={options}
         style={{ width: 200 }}
