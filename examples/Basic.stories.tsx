@@ -40,6 +40,14 @@ export function Basic() {
     setValue(data);
   };
 
+  const onBlur = (e: React.FocusEvent) => {
+    action("onBlur")(e);
+    console.log(e);
+  };
+  const onDropdownVisibleChange = (open: boolean) => {
+    console.log(open);
+  };
+
   const test = (a: string | number, b: OptionData) => {
     return false;
   };
@@ -51,12 +59,14 @@ export function Basic() {
         options={options}
         style={{ width: 200 }}
         onSearch={onSearch}
+        onBlur={onBlur}
         onSelect={onSelect}
         placeholder="input here"
       />
       <br />
       <br />
       <AutoComplete
+        onDropdownVisibleChange={onDropdownVisibleChange}
         value={value}
         options={options}
         style={{ width: 200 }}

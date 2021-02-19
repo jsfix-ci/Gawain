@@ -23,15 +23,16 @@ export interface AutoCompleteProps {
   filterOption?: (inputValue: string | number, option: OptionData) => boolean;
   getPopupContainer?: () => React.ReactNode;
   notFoundContent?: React.ReactNode;
-
-  placeholder?: string;
   options?: OptionData[];
-  visible?: boolean;
-  style?: React.CSSProperties;
+  placeholder?: string;
   value?: string | number;
+  onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+  onDropdownVisibleChange?: (open: boolean) => void;
   onChange?: (value: string | number) => void;
   onSearch?: (value: string) => void;
   onSelect?: (value: string | number, option: OptionData) => void;
+  style?: React.CSSProperties;
+  visible?: boolean;
 }
 
 export default function AutoComplete(props: AutoCompleteProps) {
@@ -40,20 +41,22 @@ export default function AutoComplete(props: AutoCompleteProps) {
     autoFocus = false,
     children,
     defaultActiveFirstOption = true,
-    defaultOpen,
+    defaultOpen = false,
     defaultValue,
     disabled = false,
     dropdownClassName,
     dropdownMatchSelectWidth = true,
     filterOption,
     notFoundContent,
-    style,
-    placeholder,
     options = [],
-    value,
+    placeholder,
+    onBlur,
+    onDropdownVisibleChange,
     onSearch,
     onSelect,
     onChange,
+    style,
+    value,
   } = props;
 
   const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
@@ -65,6 +68,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   const inputRef = useRef<HTMLInputElement>();
   const optionRef = useRef(options);
+  const hasInit = useRef(false);
 
   //  Events
   const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
@@ -77,8 +81,9 @@ export default function AutoComplete(props: AutoCompleteProps) {
     }
   };
 
-  const onInputBlur = () => {
+  const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     setDropdownVisible(false);
+    if (onBlur) onBlur(e);
   };
 
   const onInputClick = () => {
@@ -120,11 +125,14 @@ export default function AutoComplete(props: AutoCompleteProps) {
   }, []);
   useEffect(() => {
     dropdownVisible && getMyPosition();
+    if (onDropdownVisibleChange && hasInit.current)
+      onDropdownVisibleChange(dropdownVisible);
   }, [dropdownVisible]);
 
   useEffect(() => {
     const currentDocument = returnDocument(inputRef.current);
     currentDocument.addEventListener("mousedown", onDocumentClick);
+    hasInit.current = true;
   }, []);
 
   const getMyPosition = () => {
