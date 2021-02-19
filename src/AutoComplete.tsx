@@ -21,6 +21,8 @@ export interface AutoCompleteProps {
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
   filterOption?: (inputValue: string | number, option: OptionData) => boolean;
+  getPopupContainer?: () => React.ReactNode;
+  notFoundContent?: React.ReactNode;
 
   placeholder?: string;
   options?: OptionData[];
@@ -44,8 +46,9 @@ export default function AutoComplete(props: AutoCompleteProps) {
     dropdownClassName,
     dropdownMatchSelectWidth = true,
     filterOption,
-    placeholder,
+    notFoundContent,
     style,
+    placeholder,
     options = [],
     value,
     onSearch,
@@ -79,7 +82,11 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   const onInputClick = () => {
-    if (inputRef.current?.value || optionRef.current.length > 0) {
+    if (
+      inputRef.current?.value ||
+      optionRef.current.length > 0 ||
+      typeof notFoundContent !== "undefined"
+    ) {
       setDropdownVisible(true);
     }
   };
@@ -155,6 +162,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
         onSelect={onSelectOption}
         selectedValue={inputRef.current?.value}
         defaultActiveFirstOption={defaultActiveFirstOption}
+        notFoundContent={notFoundContent}
       />
     );
   };

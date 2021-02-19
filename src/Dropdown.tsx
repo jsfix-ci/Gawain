@@ -14,6 +14,7 @@ export interface DropdownProps {
   selectedValue?: number | string;
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
+  notFoundContent?: React.ReactNode;
 
   // Events
   onSelect: (value: string | number, option: OptionData) => void;
@@ -26,6 +27,7 @@ export default function Dropdown(props: DropdownProps) {
     point,
     dropdownClassName,
     dropdownMatchSelectWidth,
+    notFoundContent,
     selectedValue: sValue = "",
     onSelect,
   } = props;
@@ -84,11 +86,12 @@ export default function Dropdown(props: DropdownProps) {
     dropdownClassName
   );
 
-  const needRender = options.length > 0;
+  const needRender =
+    options.length > 0 || typeof notFoundContent !== "undefined";
 
   return needRender ? (
     <div className={_dropdownClassName} style={style}>
-      {renderOptions(options || [])}
+      {options.length === 0 ? notFoundContent : renderOptions(options || [])}
     </div>
   ) : null;
 }

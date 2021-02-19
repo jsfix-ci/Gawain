@@ -151,6 +151,24 @@ export function APIShow() {
       </div>
       <br />
       <div>
+        <label>notFoundContent:我没有数据</label>
+        <AutoComplete
+          notFoundContent={
+            <div>
+              <p>我没有数据</p>
+              <p>但是我要展示</p>
+            </div>
+          }
+          options={options}
+          style={{ width: 200 }}
+          onSearch={onSearch}
+          onSelect={onSelect}
+          onChange={onChange}
+          placeholder="input here"
+        />
+      </div>
+      <br />
+      <div>
         <label>defaultOpen:true</label>
         <AutoComplete
           defaultOpen
