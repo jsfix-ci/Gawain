@@ -1,35 +1,29 @@
 import React, { useRef } from "react";
 import classNames from "classnames";
 
-export interface OptionData {
-  key?: string | number;
-  label?: React.ReactNode;
-  disabled?: boolean;
-  value: string | number;
-}
+import { OptionData } from "./Option";
+
 export interface DropdownProps {
   defaultActiveFirstOption?: boolean;
-  options?: OptionData[];
-  point: { top: number; left: number; width: number };
-  selectedValue?: number | string;
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
   notFoundContent?: React.ReactNode;
-
-  // Events
   onSelect: (value: string | number, option: OptionData) => void;
+  options?: OptionData[];
+  point: { top: number; left: number; width: number };
+  selectedValue?: number | string;
 }
 
 export default function Dropdown(props: DropdownProps) {
   const {
     defaultActiveFirstOption = true,
-    options = [],
-    point,
     dropdownClassName,
     dropdownMatchSelectWidth,
     notFoundContent,
-    selectedValue: sValue = "",
     onSelect,
+    options = [],
+    point,
+    selectedValue: sValue = "",
   } = props;
 
   const hasInitOption = useRef<undefined | boolean>(undefined);
@@ -88,10 +82,9 @@ export default function Dropdown(props: DropdownProps) {
 
   const needRender =
     options.length > 0 || typeof notFoundContent !== "undefined";
-
   return needRender ? (
     <div className={_dropdownClassName} style={style}>
-      {options.length === 0 ? notFoundContent : renderOptions(options || [])}
+      {options.length === 0 ? notFoundContent : renderOptions(options)}
     </div>
   ) : null;
 }

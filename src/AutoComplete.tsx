@@ -1,19 +1,21 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-} from "react";
+import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 
 import Portal from "./Portal";
-import Dropdown, { OptionData } from "./Dropdown";
-import { getPosition, onResize, returnDocument, contains } from "./utils";
+import Dropdown from "./Dropdown";
+import { OptionData } from "./Option";
+import {
+  getPosition,
+  onResize,
+  returnDocument,
+  contains,
+  isInvalidChild,
+  convertChildrenToOption,
+} from "./utils";
 
 export interface AutoCompleteProps {
   allowClear?: boolean;
   autoFocus?: boolean;
-  children?: React.ReactElement;
+  children?: React.ReactNode;
   defaultActiveFirstOption?: boolean;
   defaultOpen?: boolean;
   defaultValue?: string;
@@ -138,6 +140,8 @@ export default function AutoComplete(props: AutoCompleteProps) {
     const currentDocument = returnDocument(inputRef.current);
     currentDocument.addEventListener("mousedown", onDocumentClick);
     hasInit.current = true;
+    return () =>
+      currentDocument.removeEventListener("mousedown", onDocumentClick);
   }, []);
 
   const getMyPosition = () => {
@@ -156,26 +160,27 @@ export default function AutoComplete(props: AutoCompleteProps) {
     return container;
   };
 
-  const filteredOptions = useMemo(() => {
-    // 多个组件存在时会额外触发
+  const displayOptions = React.useMemo(() => {
+    const childNodes = convertChildrenToOption(children);
+    const _displayOptions = childNodes.length > 0 ? childNodes : options;
     return typeof filterOption !== "undefined"
-      ? options.filter((o) =>
+      ? _displayOptions.filter((o) =>
           filterOption(inputRef.current ? inputRef.current.value : "", o)
         )
-      : options;
-  }, [options]);
+      : _displayOptions;
+  }, [options, children, filterOption]);
 
   const getComponent = () => {
     return (
       <Dropdown
+        defaultActiveFirstOption={defaultActiveFirstOption}
         dropdownClassName={dropdownClassName}
         dropdownMatchSelectWidth={dropdownMatchSelectWidth}
-        options={filteredOptions}
-        point={position}
-        onSelect={onSelectOption}
-        selectedValue={inputRef.current?.value}
-        defaultActiveFirstOption={defaultActiveFirstOption}
         notFoundContent={notFoundContent}
+        options={displayOptions}
+        onSelect={onSelectOption}
+        point={position}
+        selectedValue={inputRef.current?.value}
       />
     );
   };
@@ -191,7 +196,12 @@ export default function AutoComplete(props: AutoCompleteProps) {
       </div>
     ) : null;
 
-  let inputNode = children || <input />;
+  let inputNode = isInvalidChild(children) ? (
+    <input />
+  ) : (
+    (children as React.ReactElement)
+  );
+
   const isControlMode = !(typeof value === "undefined");
 
   inputNode = React.cloneElement(inputNode, {

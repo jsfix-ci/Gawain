@@ -14,7 +14,7 @@
     "lint": "npm run lint:script  && npm run lint:style",
     "lint:script": "eslint . --ext '.js,.jsx,.ts,.tsx'",
     "lint:style": "prettier --write src/**",
-    "storybook": "start-storybook -p 6006",
+    "storybook": "start-storybook -p 1231",
     "build-storybook": "build-storybook"
   },
   "author": "FuZhiCheng",

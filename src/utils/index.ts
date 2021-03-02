@@ -1,3 +1,5 @@
+import * as React from "react";
+
 export function getPosition(el: Element) {
   const rectObject = el.getBoundingClientRect();
   const pos = {
@@ -34,4 +36,37 @@ export function contains(root: Node | null | undefined, n: Node | null) {
     return false;
   }
   return root.contains(n);
+}
+
+function isOption(child: any) {
+  return child?.type && child.type.isOption;
+}
+
+export function isInvalidChild(child: any) {
+  return (
+    typeof child === "undefined" || Array.isArray(child) || isOption(child)
+  );
+}
+
+export function convertChildrenToOption(nodes: React.ReactNode) {
+  const nodesArray = React.Children.toArray(nodes);
+  return nodesArray
+    .map((node) => {
+      if (!React.isValidElement(node) || !isOption(node)) {
+        return null;
+      }
+
+      const {
+        key,
+        props: { children, value, ...restProps },
+      } = node as React.ReactElement;
+
+      return {
+        key,
+        value: value !== undefined ? value : key,
+        children,
+        ...restProps,
+      };
+    })
+    .filter((data) => data);
 }
