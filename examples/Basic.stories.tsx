@@ -2,10 +2,9 @@
 import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
+import AutoComplete from "../src";
 import "../src/assets/index.less";
-import AutoComplete, { OptionData } from "../src";
 
-// This default export determines where your story goes in the story list
 export default {
   title: "AutoComplete",
   component: AutoComplete,
@@ -53,14 +52,9 @@ export function Basic() {
     console.log(open);
   };
 
-  const test = (a: string | number, b: OptionData) => {
-    return false;
-  };
-
   return (
     <div>
       <AutoComplete
-        filterOption={test}
         options={options}
         style={{ width: 200 }}
         onSearch={onSearch}
@@ -71,7 +65,6 @@ export function Basic() {
       <br />
       <br />
       <AutoComplete
-        onDropdownVisibleChange={onDropdownVisibleChange}
         onFocus={onFocus}
         value={value}
         options={options}
@@ -80,6 +73,7 @@ export function Basic() {
         onSelect={onSelect}
         onChange={onChange}
         placeholder="control mode"
+        onDropdownVisibleChange={onDropdownVisibleChange}
       />
     </div>
   );

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import React, { useState } from "react";
-import { action } from "@storybook/addon-actions";
 
 import "../src/assets/index.less";
 import AutoComplete, { Option } from "../src";

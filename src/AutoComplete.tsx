@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import Portal from "./Portal";
 import Dropdown from "./Dropdown";
@@ -22,7 +22,7 @@ export interface AutoCompleteProps {
   disabled?: boolean;
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
-  filterOption?: (inputValue: string | number, option: OptionData) => boolean;
+  filterOption?: (inputValue: string, option: OptionData) => boolean;
   getPopupContainer?: () => React.ReactNode;
   notFoundContent?: React.ReactNode;
   options?: OptionData[];
@@ -69,6 +69,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     top: -99999,
     width: 200,
   });
+  const [displayValue, setDisplayValue] = useState("");
 
   const inputRef = useRef<HTMLInputElement>();
   const optionRef = useRef(options);
@@ -76,11 +77,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   //  Events
   const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
-    if (onSearch) onSearch(e.currentTarget.value);
-    if (onChange) onChange(e.currentTarget.value);
-    if (!e.currentTarget.value && dropdownVisible) {
+    const value = e.currentTarget.value;
+    if (onSearch) onSearch(value);
+    if (onChange) onChange(value);
+    setDisplayValue(value);
+    if (!value && dropdownVisible) {
       setDropdownVisible(false);
-    } else if (e.currentTarget.value && !dropdownVisible) {
+    } else if (value && !dropdownVisible) {
       setDropdownVisible(true);
     }
   };
@@ -95,7 +98,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   const onInputClick = () => {
     if (
-      inputRef.current?.value ||
+      displayValue ||
       optionRef.current.length > 0 ||
       typeof notFoundContent !== "undefined"
     ) {
@@ -104,7 +107,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   const onSelectOption = (value: string | number, option: OptionData) => {
-    inputRef.current!.value = String(value);
+    setDisplayValue(String(value));
     if (onSelect) onSelect(value, option);
     if (onChange) onChange(value);
   };
@@ -112,7 +115,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const onClear = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     if (inputRef.current) {
-      inputRef.current.value = "";
+      setDisplayValue("");
       if (onChange) onChange("");
       setDropdownVisible(false);
       optionRef.current = [];
@@ -126,7 +129,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   // UI
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (inputNode.type === "textarea")
       onResize(inputRef.current, getMyPosition);
   }, []);
@@ -160,15 +163,13 @@ export default function AutoComplete(props: AutoCompleteProps) {
     return container;
   };
 
-  const displayOptions = React.useMemo(() => {
+  const displayOptions = useMemo(() => {
     const childNodes = convertChildrenToOption(children);
-    const _displayOptions = childNodes.length > 0 ? childNodes : options;
+    const data = childNodes.length > 0 ? childNodes : options;
     return typeof filterOption !== "undefined"
-      ? _displayOptions.filter((o) =>
-          filterOption(inputRef.current ? inputRef.current.value : "", o)
-        )
-      : _displayOptions;
-  }, [options, children, filterOption]);
+      ? data.filter((o) => filterOption(displayValue, o))
+      : data;
+  }, [options, children, displayValue]);
 
   const getComponent = () => {
     return (
@@ -180,7 +181,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
         options={displayOptions}
         onSelect={onSelectOption}
         point={position}
-        selectedValue={inputRef.current?.value}
+        selectedValue={displayValue}
       />
     );
   };
@@ -190,7 +191,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   ) : null;
 
   const clearIcon =
-    allowClear && inputRef.current?.value ? (
+    allowClear && displayValue ? (
       <div className="f-autocomplete-clear-icon" onMouseDown={onClear}>
         <span id="close" />
       </div>
@@ -210,7 +211,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     ref: inputRef,
     autoFocus,
     defaultValue: defaultValue,
-    ...(isControlMode && { value }),
+    value: isControlMode ? value : displayValue,
     disabled,
     placeholder,
     onMouseDown: onInputClick,
