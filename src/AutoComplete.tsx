@@ -123,6 +123,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     setDisplayValue(String(value));
     if (onSelect) onSelect(value, option);
     if (onChange) onChange(value);
+    setDropdownVisible(false);
   };
 
   const onClear = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -168,7 +169,6 @@ export default function AutoComplete(props: AutoCompleteProps) {
   }, []);
 
   const getMyPosition = () => {
-    // bug
     const inputNode = getInputNode();
     inputNode
       ? setPosition(getPosition(inputNode))
@@ -229,6 +229,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const isControlMode = !(typeof value === "undefined");
 
   // type need fix
+  // id need fix
   displayInputNode = React.cloneElement(displayInputNode, {
     autoComplete: "off",
     className: `f-autocomplete-${displayInputNode.type}`,

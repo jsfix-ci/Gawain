@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import classNames from "classnames";
 
-import { OptionData } from "./Option";
+import { OptionData, OptionsType } from "./Option";
 
 export interface DropdownProps {
   defaultActiveFirstOption?: boolean;
@@ -40,27 +40,39 @@ export default function Dropdown(props: DropdownProps) {
     onSelect(value, option);
   };
 
-  const hasSelected = !!sValue;
-  const renderOptions = (options: OptionData[]) => {
-    return options.map((o, index) => {
-      const optionClassName = classNames("f-dropdown-option", {
-        "f-dropdown-option-disabled": !!o.disabled,
-        "f-dropdown-option-selected": hasSelected
-          ? sValue === o.value
-          : !hasInitOption.current && defaultActiveFirstOption && index === 0
-          ? true
-          : false,
-      });
-      return (
-        <div
-          className={optionClassName}
-          key={o.key || o.value}
-          onMouseDown={(e) => onClickOption(e, o.value, o)}
-        >
-          {o.label || o.value}
+  const renderData = (data: OptionsType) => {
+    return data.map((d, index) => {
+      const isGroup = Array.isArray(d.options);
+      return isGroup ? (
+        <div>
+          <span onMouseDown={(e) => e.preventDefault()}>{d.label}</span>
+          {renderData(d.options)}
         </div>
+      ) : (
+        renderOptions(d as OptionData, index)
       );
     });
+  };
+
+  const hasSelected = !!sValue;
+  const renderOptions = (option: OptionData, index: number) => {
+    const optionClassName = classNames("f-dropdown-option", {
+      "f-dropdown-option-disabled": !!option.disabled,
+      "f-dropdown-option-selected": hasSelected
+        ? sValue === option.value
+        : !hasInitOption.current && defaultActiveFirstOption && index === 0
+        ? true
+        : false,
+    });
+    return (
+      <div
+        className={optionClassName}
+        key={option.key || option.value}
+        onMouseDown={(e) => onClickOption(e, option.value, option)}
+      >
+        {option.label || option.value}
+      </div>
+    );
   };
 
   const isValidNumber =
@@ -84,7 +96,7 @@ export default function Dropdown(props: DropdownProps) {
     options.length > 0 || typeof notFoundContent !== "undefined";
   return needRender ? (
     <div className={_dropdownClassName} style={style}>
-      {options.length === 0 ? notFoundContent : renderOptions(options)}
+      {options.length === 0 ? notFoundContent : renderData(options)}
     </div>
   ) : null;
 }

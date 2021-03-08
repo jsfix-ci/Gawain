@@ -2,6 +2,7 @@ import * as React from "react";
 import { Input } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
+import "./demo.less";
 import AutoComplete from "../src";
 
 export default {

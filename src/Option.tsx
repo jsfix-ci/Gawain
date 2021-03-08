@@ -5,6 +5,7 @@ export interface OptionData {
   label?: React.ReactNode;
   disabled?: boolean;
   value: string | number;
+  [index: string]: any;
 }
 
 export interface OptionGroup {
