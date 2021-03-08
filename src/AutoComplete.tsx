@@ -25,6 +25,7 @@ export interface AutoCompleteProps {
   filterOption?: (inputValue: string, option: OptionData) => boolean;
   getPopupContainer?: () => React.ReactNode;
   notFoundContent?: React.ReactNode;
+  open?: boolean;
   options?: OptionsType;
   placeholder?: string;
   value?: string | number;
@@ -51,6 +52,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     dropdownMatchSelectWidth = true,
     filterOption,
     notFoundContent,
+    open = false,
     options = [],
     placeholder,
     onBlur,
@@ -73,9 +75,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>();
-  const optionRef = useRef(options);
   const hasInit = useRef(false);
-
   // Common
   // 需要在挂载后使用
   const getInputNode = () => {
@@ -112,7 +112,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const onInputClick = () => {
     if (
       displayValue ||
-      optionRef.current.length > 0 ||
+      options.length > 0 ||
       typeof notFoundContent !== "undefined"
     ) {
       setDropdownVisible(true);
@@ -131,7 +131,6 @@ export default function AutoComplete(props: AutoCompleteProps) {
     setDisplayValue("");
     if (onChange) onChange("");
     setDropdownVisible(false);
-    optionRef.current = [];
   };
 
   // 可能和onblur 重复
@@ -209,7 +208,15 @@ export default function AutoComplete(props: AutoCompleteProps) {
     );
   };
 
-  const dropdown = dropdownVisible ? (
+  const mergedVisible = useMemo(() => {
+    if (open && options.length > 0) {
+      return true;
+    } else {
+      return dropdownVisible;
+    }
+  }, [open, dropdownVisible, options]);
+
+  const dropdown = mergedVisible ? (
     <Portal getContainer={getContainer}>{getComponent()}</Portal>
   ) : null;
 
