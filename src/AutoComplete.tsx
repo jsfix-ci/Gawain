@@ -33,7 +33,7 @@ export interface AutoCompleteProps {
   onChange?: (value: string | number) => void;
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onSearch?: (value: string) => void;
-  onSelect?: (value: string | number, option: OptionData) => void;
+  onSelect?: (value: string, option: OptionData) => void;
   style?: React.CSSProperties;
   visible?: boolean;
 }
@@ -121,7 +121,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   const onSelectOption = (value: string | number, option: OptionData) => {
     setDisplayValue(String(value));
-    if (onSelect) onSelect(value, option);
+    if (onSelect) onSelect(String(value), option);
     if (onChange) onChange(value);
     setDropdownVisible(false);
   };
