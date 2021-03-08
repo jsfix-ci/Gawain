@@ -7,6 +7,14 @@ export interface OptionData {
   value: string | number;
 }
 
+export interface OptionGroup {
+  key?: string | number;
+  label?: React.ReactNode;
+  options: OptionData[];
+}
+
+export type OptionsType = (OptionData | OptionGroup)[];
+
 interface OptionProps extends Omit<OptionData, "label"> {
   children: React.ReactNode;
   [prop: string]: any;
