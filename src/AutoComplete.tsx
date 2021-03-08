@@ -23,7 +23,7 @@ export interface AutoCompleteProps {
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
   filterOption?: (inputValue: string, option: OptionData) => boolean;
-  getPopupContainer?: () => React.ReactNode;
+  // getPopupContainer?: (props: any) => HTMLElement;
   notFoundContent?: React.ReactNode;
   open?: boolean;
   options?: OptionsType;

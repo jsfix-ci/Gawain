@@ -1,6 +1,4 @@
-import { Input } from "antd";
 import React, { useState } from "react";
-import { SelectProps } from "antd/es/select";
 import { action } from "@storybook/addon-actions";
 
 import AutoComplete from "../src";
@@ -46,9 +44,7 @@ const searchResult = (query: string) =>
     });
 
 export const UnCertainCategory = () => {
-  const [options, setOptions] = useState<
-    SelectProps<Record<string, unknown>>["options"]
-  >([]);
+  const [options, setOptions] = useState<any[]>([]);
 
   const handleSearch = (value: string) => {
     setOptions(value ? searchResult(value) : []);
@@ -66,7 +62,7 @@ export const UnCertainCategory = () => {
       onSelect={onSelect}
       onSearch={handleSearch}
     >
-      <Input.Search size="large" placeholder="input here" enterButton />
+      <input placeholder="input here" />
     </AutoComplete>
   );
 };

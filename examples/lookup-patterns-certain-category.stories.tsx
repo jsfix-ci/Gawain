@@ -1,5 +1,4 @@
 import * as React from "react";
-import { Input } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 import "./demo.less";
@@ -70,7 +69,7 @@ export const CertainCategory = () => (
       style={{ width: 250 }}
       options={options}
     >
-      <Input.Search size="large" placeholder="input here" />
+      <input placeholder="input here" />
     </AutoComplete>
     <br />
     <AutoComplete
@@ -79,7 +78,7 @@ export const CertainCategory = () => (
       style={{ width: 250 }}
       options={options}
     >
-      <Input.TextArea size="large" placeholder="input here" />
+      <textarea placeholder="input here" />
     </AutoComplete>
   </>
 );
