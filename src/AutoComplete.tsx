@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import classNames from "classnames";
 
 import Portal from "./Portal";
 import Dropdown from "./Dropdown";
@@ -234,12 +235,14 @@ export default function AutoComplete(props: AutoCompleteProps) {
   );
 
   const isControlMode = !(typeof value === "undefined");
+  const inputNodeClassName = classNames("f-autocomplete", {
+    [`f-autocomplete-${displayInputNode.type}`]: Boolean(displayInputNode.type),
+  });
 
-  // type need fix
   // id need fix
   displayInputNode = React.cloneElement(displayInputNode, {
     autoComplete: "off",
-    className: `f-autocomplete-${displayInputNode.type}`,
+    className: inputNodeClassName,
     id: "f-autocomplete",
     ref: inputRef,
     autoFocus,
