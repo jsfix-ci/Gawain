@@ -70,3 +70,8 @@ export function convertChildrenToOption(nodes: React.ReactNode) {
     })
     .filter((data) => data);
 }
+
+let uuid = 0;
+export function getUUID() {
+  return uuid++;
+}

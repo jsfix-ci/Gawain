@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
 import classNames from "classnames";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import Portal from "./Portal";
 import Dropdown from "./Dropdown";
+import useSingleton from "./hooks/useSingleton";
 import { OptionData, OptionsType } from "./Option";
 import {
   getPosition,
@@ -11,6 +12,7 @@ import {
   contains,
   isInvalidChild,
   convertChildrenToOption,
+  getUUID,
 } from "./utils";
 
 export interface AutoCompleteProps {
@@ -77,7 +79,12 @@ export default function AutoComplete(props: AutoCompleteProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>();
   const hasInit = useRef(false);
-  // Common
+  const id = useRef<number>();
+
+  useSingleton(() => {
+    id.current = getUUID();
+  });
+
   // 需要在挂载后使用
   const getInputNode = () => {
     if (
@@ -86,7 +93,9 @@ export default function AutoComplete(props: AutoCompleteProps) {
     ) {
       return inputRef.current;
     }
-    return wrapperRef.current?.querySelector("#f-autocomplete") as Element;
+    return wrapperRef.current?.querySelector(
+      `#f-autocomplete-${id.current}`
+    ) as Element;
   };
 
   //  Events
@@ -149,24 +158,25 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   // UI
   useEffect(() => {
-    const inputNode = getInputNode();
-    if (inputNode instanceof HTMLTextAreaElement) {
-      onResize(inputNode, getMyPosition);
-    }
-  }, []);
-  useEffect(() => {
-    dropdownVisible && getMyPosition();
-    if (onDropdownVisibleChange && hasInit.current)
-      onDropdownVisibleChange(dropdownVisible);
-  }, [dropdownVisible]);
-
-  useEffect(() => {
     const currentDocument = returnDocument(wrapperRef.current);
     currentDocument.addEventListener("mousedown", onDocumentMousedown);
     hasInit.current = true;
     return () =>
       currentDocument.removeEventListener("mousedown", onDocumentMousedown);
   }, []);
+
+  useEffect(() => {
+    const inputNode = getInputNode();
+    if (inputNode instanceof HTMLTextAreaElement) {
+      onResize(inputNode, getMyPosition);
+    }
+  }, []);
+
+  useEffect(() => {
+    dropdownVisible && getMyPosition();
+    if (onDropdownVisibleChange && hasInit.current)
+      onDropdownVisibleChange(dropdownVisible);
+  }, [dropdownVisible]);
 
   const getMyPosition = () => {
     const inputNode = getInputNode();
@@ -239,11 +249,10 @@ export default function AutoComplete(props: AutoCompleteProps) {
     [`f-autocomplete-${displayInputNode.type}`]: Boolean(displayInputNode.type),
   });
 
-  // id need fix
   displayInputNode = React.cloneElement(displayInputNode, {
     autoComplete: "off",
     className: inputNodeClassName,
-    id: "f-autocomplete",
+    id: `f-autocomplete-${id.current}`,
     ref: inputRef,
     autoFocus,
     defaultValue: defaultValue,

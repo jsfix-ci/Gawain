@@ -1,6 +1,8 @@
 import { createPortal } from "react-dom";
 import React, { useEffect, useRef } from "react";
 
+import useSingleton from "./hooks/useSingleton";
+
 interface PortalProps {
   children?: React.ReactElement;
   getContainer: () => HTMLElement;
@@ -10,11 +12,9 @@ export default function Portal(props: PortalProps) {
   const { getContainer, children } = props;
 
   const containerRef = useRef<HTMLElement>();
-  const hasInit = useRef(false);
-  if (!hasInit.current) {
+  useSingleton(() => {
     containerRef.current = getContainer();
-    hasInit.current = true;
-  }
+  });
 
   useEffect(() => {
     return () => {
