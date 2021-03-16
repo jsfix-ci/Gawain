@@ -31,7 +31,6 @@ export function Basic() {
 
   const onSelect = (data: string | number) => {
     action("onSelect")(data);
-    console.log("onSelect", data);
   };
 
   const onChange = (data: string | number) => {
@@ -41,11 +40,9 @@ export function Basic() {
 
   const onBlur = (e: React.FocusEvent) => {
     action("onBlur")(e);
-    console.log(e);
   };
   const onFocus = (e: React.FocusEvent) => {
     action("onFocus")(e);
-    console.log(e);
   };
 
   const onDropdownVisibleChange = (open: boolean) => {

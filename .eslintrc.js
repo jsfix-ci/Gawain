@@ -24,6 +24,7 @@ module.exports = {
     // 这里填入你的项目需要的全局变量
   },
   rules: {
+    // "react-hooks/exhaustive-deps": "warn",
     "no-console": "error",
     "@typescript-eslint/no-var-requires": 0,
     "@typescript-eslint/no-require-imports": 0,

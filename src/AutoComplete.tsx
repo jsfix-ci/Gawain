@@ -26,7 +26,7 @@ export interface AutoCompleteProps {
   dropdownClassName?: string;
   dropdownMatchSelectWidth?: boolean | number;
   filterOption?: (inputValue: string, option: OptionData) => boolean;
-  // getPopupContainer?: (props: any) => HTMLElement;
+  getPopupContainer?: (triggerNode: HTMLElement) => HTMLElement;
   notFoundContent?: React.ReactNode;
   open?: boolean;
   options?: OptionsType;
@@ -54,6 +54,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     dropdownClassName,
     dropdownMatchSelectWidth = true,
     filterOption,
+    getPopupContainer,
     notFoundContent,
     open = false,
     options = [],
@@ -68,6 +69,11 @@ export default function AutoComplete(props: AutoCompleteProps) {
     value,
   } = props;
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>();
+  const hasInit = useRef(false);
+  const id = useRef<number>();
+
   const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
   const [position, setPosition] = useState({
     left: 0,
@@ -76,29 +82,50 @@ export default function AutoComplete(props: AutoCompleteProps) {
   });
   const [displayValue, setDisplayValue] = useState("");
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>();
-  const hasInit = useRef(false);
-  const id = useRef<number>();
-
   useSingleton(() => {
     id.current = getUUID();
   });
 
-  // 需要在挂载后使用
-  const getInputNode = () => {
+  // 只能在mounted后调用的方法中使用
+  const getNodes = () => {
+    let inputNode: HTMLElement;
     if (
       inputRef.current instanceof HTMLTextAreaElement ||
       inputRef.current instanceof HTMLInputElement
     ) {
-      return inputRef.current;
+      inputNode = inputRef.current;
+    } else {
+      inputNode = wrapperRef.current?.querySelector(
+        `#f-autocomplete-${id.current}`
+      ) as HTMLElement;
     }
-    return wrapperRef.current?.querySelector(
-      `#f-autocomplete-${id.current}`
-    ) as Element;
+    const mountNode = getPopupContainer
+      ? getPopupContainer(inputNode)
+      : document.body;
+    return [inputNode, mountNode];
   };
 
-  //  Events
+  const getDropdownPosition = () => {
+    const [inputNode, mountNode] = getNodes();
+    if (inputNode) {
+      setPosition(getPosition(inputNode, mountNode));
+    }
+  };
+
+  //  Events Listeners
+  // 可能和onblur 重复
+  const onDocumentMousedown = (event: MouseEvent) => {
+    const { target } = event;
+    const [inputNode] = getNodes();
+    if (
+      target instanceof Node &&
+      !contains(inputNode, target) &&
+      dropdownVisible
+    ) {
+      setDropdownVisible(false);
+    }
+  };
+
   const onInputInput = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     if (onSearch) onSearch(value);
@@ -143,20 +170,20 @@ export default function AutoComplete(props: AutoCompleteProps) {
     setDropdownVisible(false);
   };
 
-  // 可能和onblur 重复
-  const onDocumentMousedown = (event: MouseEvent) => {
-    const { target } = event;
-    const inputNode = getInputNode();
-    if (
-      target instanceof Node &&
-      !contains(inputNode, target) &&
-      dropdownVisible
-    ) {
-      setDropdownVisible(false);
-    }
-  };
-
   // UI
+  const mergedVisible = useMemo(() => {
+    if (open && options.length > 0) {
+      return true;
+    } else {
+      return dropdownVisible;
+    }
+  }, [open, dropdownVisible, options]);
+
+  useEffect(() => {
+    // 如果加上mergedVisible为true再进行计算，会有错位问题，寻找原因
+    getDropdownPosition();
+  }, []);
+
   useEffect(() => {
     const currentDocument = returnDocument(wrapperRef.current);
     currentDocument.addEventListener("mousedown", onDocumentMousedown);
@@ -166,24 +193,17 @@ export default function AutoComplete(props: AutoCompleteProps) {
   }, []);
 
   useEffect(() => {
-    const inputNode = getInputNode();
+    const [inputNode] = getNodes();
     if (inputNode instanceof HTMLTextAreaElement) {
-      onResize(inputNode, getMyPosition);
+      onResize(inputNode, getDropdownPosition);
     }
   }, []);
 
   useEffect(() => {
-    dropdownVisible && getMyPosition();
-    if (onDropdownVisibleChange && hasInit.current)
+    if (onDropdownVisibleChange && hasInit.current) {
       onDropdownVisibleChange(dropdownVisible);
-  }, [dropdownVisible]);
-
-  const getMyPosition = () => {
-    const inputNode = getInputNode();
-    inputNode
-      ? setPosition(getPosition(inputNode))
-      : setPosition({ left: 0, top: -100, width: 200 });
-  };
+    }
+  }, [dropdownVisible, onDropdownVisibleChange]);
 
   const getContainer = () => {
     const container = document.createElement("div");
@@ -191,7 +211,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     container.style.top = "0";
     container.style.left = "0";
     container.style.width = "100%";
-    const mountNode = document.body;
+    const [, mountNode] = getNodes();
     mountNode.appendChild(container);
     return container;
   };
@@ -219,14 +239,6 @@ export default function AutoComplete(props: AutoCompleteProps) {
     );
   };
 
-  const mergedVisible = useMemo(() => {
-    if (open && options.length > 0) {
-      return true;
-    } else {
-      return dropdownVisible;
-    }
-  }, [open, dropdownVisible, options]);
-
   const dropdown = mergedVisible ? (
     <Portal getContainer={getContainer}>{getComponent()}</Portal>
   ) : null;
@@ -243,7 +255,6 @@ export default function AutoComplete(props: AutoCompleteProps) {
   ) : (
     (children as React.ReactElement)
   );
-
   const isControlMode = !(typeof value === "undefined");
   const inputNodeClassName = classNames("f-autocomplete", {
     [`f-autocomplete-${displayInputNode.type}`]: Boolean(displayInputNode.type),

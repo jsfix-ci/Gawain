@@ -1,16 +1,22 @@
 import * as React from "react";
 
-export function getPosition(el: Element) {
-  const rectObject = el.getBoundingClientRect();
+export function getPosition(inputNode: HTMLElement, mountNode: HTMLElement) {
+  const mountNodeRect = mountNode.getBoundingClientRect();
+  const inputNodeRect = inputNode.getBoundingClientRect();
+
   const pos = {
-    left: rectObject.left,
-    top: rectObject.top + rectObject.height,
-    width: rectObject.width,
+    left: inputNodeRect.x - mountNodeRect.x,
+    top: inputNodeRect.bottom - mountNodeRect.y,
+    // top: 0,
+    width: inputNodeRect.width,
   };
-  const document = el.ownerDocument;
+
+  const document = inputNode.ownerDocument;
   const window = document.defaultView;
+
   pos.left += window ? window.pageXOffset : 0;
-  pos.top += window ? window.pageYOffset : 0;
+  // pos.top += window ? window.pageYOffset : 0;
+
   return pos;
 }
 
