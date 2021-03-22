@@ -1,29 +1,65 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 
 import AutoComplete from "../src";
 
-describe("AutoComplete", () => {
-  describe("AutoComplete.render", () => {
+describe("<AutoComplete />", () => {
+  describe("render", () => {
     test("AutoComplete with custom Input render perfectly", () => {
       const options = [
         { label: "12345", value: "12345" },
         { label: "23456", value: "23456" },
         { label: "34567", value: "34567" },
       ];
-      const wrapper = mount(
-        <AutoComplete options={options}>
+      const { getByRole, container } = render(
+        <AutoComplete
+          options={options}
+          getPopupContainer={(t) => t.parentNode as HTMLElement}
+        >
           <textarea />
         </AutoComplete>
       );
-      const textArea = wrapper.find("textarea");
 
-      textArea.simulate("change", { target: { value: "123" } });
+      const textarea = getByRole("textbox");
+      fireEvent.input(textarea, { target: { value: "1" } });
+      const optionsElements = container.querySelectorAll(".f-dropdown-option");
 
-      expect(textArea.length).toBe(1);
-      // expect(wrapper.find("document").find(".f-dropdown-option").length).toBe(
-      //   3
-      // );
+      expect(textarea.className).toContain("f-autocomplete-textarea");
+      expect(optionsElements.length).toBe(3);
+    });
+
+    // test("legacy AutoComplete.Option should be compatiable", () => {
+    //   const { getByRole } = render(
+    //     <AutoComplete>
+    //       <AutoComplete.Option value="111">111</AutoComplete.Option>
+    //       <AutoComplete.Option value="222">222</AutoComplete.Option>
+    //     </AutoComplete>
+    //   );
+
+    //   // expect(wrapper.find("input").length).toBe(1);
+    //   // wrapper.find("input").simulate("change", { target: { value: "1" } });
+    //   // expect(wrapper.find(".ant-select-item-option").length).toBe(2);
+    // });s
+  });
+
+  describe("prop: options", () => {
+    test("AutoComplete should work when options is object array", () => {
+      const options = [
+        { text: "text", value: "value" },
+        { text: "abc", value: "xxx" },
+      ];
+      const { getByRole, baseElement } = render(
+        <AutoComplete options={options} />
+      );
+
+      const input = getByRole("textbox");
+      fireEvent.input(input, { target: { value: "v" } });
+      const optionsElements = baseElement.querySelectorAll(
+        ".f-dropdown-option"
+      );
+
+      expect(input.className).toContain("f-autocomplete-input");
+      expect(optionsElements.length).toBe(2);
     });
   });
 });
