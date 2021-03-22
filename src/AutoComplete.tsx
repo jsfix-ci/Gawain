@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import Portal from "./Portal";
 import Dropdown from "./Dropdown";
 import useSingleton from "./hooks/useSingleton";
-import { OptionData, OptionsType } from "./Option";
+import { OptionData, OptionsType, Option } from "./Option";
 import {
   getPosition,
   onResize,
@@ -41,8 +41,15 @@ export interface AutoCompleteProps {
   style?: React.CSSProperties;
   visible?: boolean;
 }
+export interface RefAutoCompleteProps {
+  focus: () => void;
+  blur: () => void;
+}
 
-export default function AutoComplete(props: AutoCompleteProps) {
+function AutoComplete(
+  props: AutoCompleteProps,
+  ref: React.Ref<RefAutoCompleteProps>
+) {
   const {
     allowClear = false,
     autoFocus = false,
@@ -70,7 +77,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   } = props;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>();
+  const inputRef = useRef<HTMLInputElement>(null);
   const hasInit = useRef(false);
   const id = useRef<number>();
 
@@ -111,6 +118,15 @@ export default function AutoComplete(props: AutoCompleteProps) {
       setPosition(getPosition(inputNode, mountNode));
     }
   };
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    },
+    blur: () => {
+      inputRef.current?.blur();
+    },
+  }));
 
   //  Events Listeners
   // 可能和onblur 重复
@@ -285,3 +301,16 @@ export default function AutoComplete(props: AutoCompleteProps) {
     </div>
   );
 }
+
+const RefAutoComplete = React.forwardRef<
+  RefAutoCompleteProps,
+  AutoCompleteProps
+>(AutoComplete);
+
+type RefAutoCompleteWithOption = typeof RefAutoComplete & {
+  Option: typeof Option;
+};
+
+(RefAutoComplete as RefAutoCompleteWithOption).Option = Option;
+
+export default RefAutoComplete as RefAutoCompleteWithOption;
