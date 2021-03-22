@@ -7,7 +7,6 @@ export function getPosition(inputNode: HTMLElement, mountNode: HTMLElement) {
   const pos = {
     left: inputNodeRect.x - mountNodeRect.x,
     top: inputNodeRect.bottom - mountNodeRect.y,
-    // top: 0,
     width: inputNodeRect.width,
   };
 
@@ -15,7 +14,7 @@ export function getPosition(inputNode: HTMLElement, mountNode: HTMLElement) {
   const window = document.defaultView;
 
   pos.left += window ? window.pageXOffset : 0;
-  // pos.top += window ? window.pageYOffset : 0;
+  pos.top += window ? window.pageYOffset : 0;
 
   return pos;
 }

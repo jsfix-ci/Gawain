@@ -171,16 +171,15 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   // UI
-  const mergedVisible = useMemo(() => {
+  useEffect(() => {
+    // maybe wrong
     if (open && options.length > 0) {
-      return true;
-    } else {
-      return dropdownVisible;
+      setDropdownVisible(true);
     }
-  }, [open, dropdownVisible, options]);
+  }, [open, options]);
 
   useEffect(() => {
-    // 如果加上mergedVisible为true再进行计算，会有错位问题，寻找原因
+    // 如果加上dropdownVisible为true再进行计算，会有错位问题，寻找原因
     getDropdownPosition();
   }, []);
 
@@ -239,7 +238,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
     );
   };
 
-  const dropdown = mergedVisible ? (
+  const dropdown = dropdownVisible ? (
     <Portal getContainer={getContainer}>{getComponent()}</Portal>
   ) : null;
 
