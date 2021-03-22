@@ -28,18 +28,23 @@ describe("<AutoComplete />", () => {
       expect(optionsElements.length).toBe(3);
     });
 
-    // test("legacy AutoComplete.Option should be compatiable", () => {
-    //   const { getByRole } = render(
-    //     <AutoComplete>
-    //       <AutoComplete.Option value="111">111</AutoComplete.Option>
-    //       <AutoComplete.Option value="222">222</AutoComplete.Option>
-    //     </AutoComplete>
-    //   );
+    test("legacy AutoComplete.Option should be compatiable", () => {
+      const { getAllByRole, baseElement } = render(
+        <AutoComplete>
+          <AutoComplete.Option value="111">111</AutoComplete.Option>
+          <AutoComplete.Option value="222">222</AutoComplete.Option>
+        </AutoComplete>
+      );
 
-    //   // expect(wrapper.find("input").length).toBe(1);
-    //   // wrapper.find("input").simulate("change", { target: { value: "1" } });
-    //   // expect(wrapper.find(".ant-select-item-option").length).toBe(2);
-    // });s
+      const input = getAllByRole("textbox");
+      fireEvent.input(input[0], { target: { value: "1" } });
+      const optionsElements = baseElement.querySelectorAll(
+        ".f-dropdown-option"
+      );
+
+      expect(input.length).toBe(1);
+      expect(optionsElements.length).toBe(2);
+    });
   });
 
   describe("prop: options", () => {
