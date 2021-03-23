@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import AutoComplete from "../src";
+import AutoComplete, { RefAutoCompleteProps } from "../src";
 
 describe("<AutoComplete />", () => {
   describe("render", () => {
@@ -47,24 +47,64 @@ describe("<AutoComplete />", () => {
     });
   });
 
-  describe("prop: options", () => {
-    test("AutoComplete should work when options is object array", () => {
-      const options = [
-        { text: "text", value: "value" },
-        { text: "abc", value: "xxx" },
-      ];
-      const { getByRole, baseElement } = render(
-        <AutoComplete options={options} />
+  describe("prop", () => {
+    describe("prop: options", () => {
+      test("AutoComplete should work when options is object array", () => {
+        const options = [
+          { text: "text", value: "value" },
+          { text: "abc", value: "xxx" },
+        ];
+        const { getByRole, baseElement } = render(
+          <AutoComplete options={options} />
+        );
+
+        const input = getByRole("textbox");
+        fireEvent.input(input, { target: { value: "v" } });
+        const optionsElements = baseElement.querySelectorAll(
+          ".f-dropdown-option"
+        );
+
+        expect(input.className).toContain("f-autocomplete-input");
+        expect(optionsElements.length).toBe(2);
+      });
+    });
+
+    test("prop: onFocus", () => {
+      const handleFocus = jest.fn();
+      const { getByRole } = render(<AutoComplete onFocus={handleFocus} />);
+
+      const textarea = getByRole("textbox");
+      textarea.focus();
+
+      expect(handleFocus).toHaveBeenCalled();
+    });
+
+    test("prop: onBlur", () => {
+      const handleBlur = jest.fn();
+      const { getByRole } = render(<AutoComplete onBlur={handleBlur} />);
+
+      const textarea = getByRole("textbox");
+      textarea.focus();
+      textarea.blur();
+
+      expect(handleBlur).toHaveBeenCalled();
+    });
+  });
+
+  describe("ref", () => {
+    test("child.ref instance should support be focused and blurred", () => {
+      let inputRef: RefAutoCompleteProps | null = null;
+      render(
+        <AutoComplete
+          options={[]}
+          ref={(node) => {
+            inputRef = node;
+          }}
+        />
       );
 
-      const input = getByRole("textbox");
-      fireEvent.input(input, { target: { value: "v" } });
-      const optionsElements = baseElement.querySelectorAll(
-        ".f-dropdown-option"
-      );
-
-      expect(input.className).toContain("f-autocomplete-input");
-      expect(optionsElements.length).toBe(2);
+      expect(typeof inputRef!.focus).toBe("function");
+      expect(typeof inputRef!.blur).toBe("function");
     });
   });
 });

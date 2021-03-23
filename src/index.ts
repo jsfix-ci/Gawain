@@ -1,8 +1,11 @@
-import AutoComplete, { AutoCompleteProps } from "./AutoComplete";
-import Dropdown, { DropdownProps } from "./Dropdown";
 import { Option, OptionData } from "./Option";
+import Dropdown, { DropdownProps } from "./Dropdown";
+import AutoComplete, {
+  AutoCompleteProps,
+  RefAutoCompleteProps,
+} from "./AutoComplete";
 
 export { Dropdown, Option }; // components
-export { AutoCompleteProps, OptionData, DropdownProps }; // types
+export { AutoCompleteProps, OptionData, DropdownProps, RefAutoCompleteProps }; // types
 
 export default AutoComplete;
