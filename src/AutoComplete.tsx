@@ -128,7 +128,7 @@ function AutoComplete(
     },
   }));
 
-  //  Events Listeners
+  // ========================== Events Listeners ==========================
   // 可能和onblur 重复
   const onDocumentMousedown = (event: MouseEvent) => {
     const { target } = event;
@@ -186,7 +186,7 @@ function AutoComplete(
     setDropdownVisible(false);
   };
 
-  // UI
+  // ========================== UI ==========================
   useEffect(() => {
     // maybe wrong
     if (open && options.length > 0) {
@@ -198,6 +198,12 @@ function AutoComplete(
     // 如果加上dropdownVisible为true再进行计算，会有错位问题，寻找原因
     getDropdownPosition();
   }, []);
+
+  useEffect(() => {
+    if (onDropdownVisibleChange && hasInit.current) {
+      onDropdownVisibleChange(dropdownVisible);
+    }
+  }, [dropdownVisible, onDropdownVisibleChange]);
 
   useEffect(() => {
     const currentDocument = returnDocument(wrapperRef.current);
@@ -213,12 +219,6 @@ function AutoComplete(
       onResize(inputNode, getDropdownPosition);
     }
   }, []);
-
-  useEffect(() => {
-    if (onDropdownVisibleChange && hasInit.current) {
-      onDropdownVisibleChange(dropdownVisible);
-    }
-  }, [dropdownVisible, onDropdownVisibleChange]);
 
   const getContainer = () => {
     const container = document.createElement("div");
