@@ -63,36 +63,10 @@ export function APIShow() {
       </div>
       <br />
       <div>
-        <label>autoFocus</label>
-        <AutoComplete
-          autoFocus
-          options={[{ label: 1, value: 1 }]}
-          style={{ width: 200 }}
-          onSearch={onSearch}
-          onSelect={onSelect}
-          onChange={onChange}
-          placeholder="input here"
-        />
-      </div>
-      <br />
-      <div>
         <label>defaultActiveFirstOption:false</label>
         <AutoComplete
           defaultActiveFirstOption={false}
           options={options}
-          style={{ width: 200 }}
-          onSearch={onSearch}
-          onSelect={onSelect}
-          onChange={onChange}
-          placeholder="input here"
-        />
-      </div>
-      <br />
-      <div>
-        <label>defaultValue: 2</label>
-        <AutoComplete
-          options={options}
-          defaultValue="2"
           style={{ width: 200 }}
           onSearch={onSearch}
           onSelect={onSelect}

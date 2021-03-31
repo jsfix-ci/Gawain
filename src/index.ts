@@ -8,4 +8,10 @@ import AutoComplete, {
 export { Dropdown, Option }; // components
 export { AutoCompleteProps, OptionData, DropdownProps, RefAutoCompleteProps }; // types
 
-export default AutoComplete;
+type RefAutoCompleteWithOption = typeof AutoComplete & {
+  Option: typeof Option;
+};
+
+(AutoComplete as RefAutoCompleteWithOption).Option = Option;
+
+export default AutoComplete as RefAutoCompleteWithOption;

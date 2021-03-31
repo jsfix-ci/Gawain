@@ -4,16 +4,17 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import AutoComplete, { RefAutoCompleteProps } from "../src";
 
 describe("<AutoComplete />", () => {
+  const mockOptions = [
+    { label: "12345", value: "12345" },
+    { label: "23456", value: "23456" },
+    { label: "34567", value: "34567" },
+  ];
+
   describe("render", () => {
-    test("AutoComplete with custom Input render perfectly", () => {
-      const options = [
-        { label: "12345", value: "12345" },
-        { label: "23456", value: "23456" },
-        { label: "34567", value: "34567" },
-      ];
+    it("with custom Input render perfectly", () => {
       const { getByRole, container } = render(
         <AutoComplete
-          options={options}
+          options={mockOptions}
           getPopupContainer={(t) => t.parentNode as HTMLElement}
         >
           <textarea />
@@ -28,7 +29,7 @@ describe("<AutoComplete />", () => {
       expect(optionsElements.length).toBe(3);
     });
 
-    test("legacy AutoComplete.Option should be compatiable", () => {
+    it("legacy AutoComplete.Option should be compatiable", () => {
       const { getAllByRole, baseElement } = render(
         <AutoComplete>
           <AutoComplete.Option value="111">111</AutoComplete.Option>
@@ -47,39 +48,67 @@ describe("<AutoComplete />", () => {
     });
   });
 
-  describe("prop", () => {
-    describe("prop: options", () => {
-      test("AutoComplete should work when options is object array", () => {
-        const options = [
-          { text: "text", value: "value" },
-          { text: "abc", value: "xxx" },
-        ];
-        const { getByRole, baseElement } = render(
-          <AutoComplete options={options} />
-        );
+  describe("prop:allowClear", () => {
+    it("should render clear icon when input value", () => {
+      const { getByRole, container } = render(
+        <AutoComplete allowClear options={mockOptions} />
+      );
 
-        const input = getByRole("textbox");
-        fireEvent.input(input, { target: { value: "v" } });
-        const optionsElements = baseElement.querySelectorAll(
-          ".f-dropdown-option"
-        );
+      fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
 
-        expect(input.className).toContain("f-autocomplete-input");
-        expect(optionsElements.length).toBe(2);
-      });
+      expect(
+        container.querySelector(".f-autocomplete-clear-icon")
+      ).not.toBeNull();
     });
 
-    test("prop: onFocus", () => {
+    it("click clear icon should clear value", () => {
+      const { container } = render(
+        <AutoComplete allowClear options={mockOptions} />
+      );
+      const input: HTMLInputElement | null = container.querySelector(
+        ".f-autocomplete-input"
+      );
+
+      fireEvent.input(input!, { target: { value: "1" } });
+      const clearIcon = container.querySelector(".f-autocomplete-clear-icon");
+      clearIcon && fireEvent.mouseDown(clearIcon);
+
+      expect(input).not.toBe(null);
+      expect(clearIcon).not.toBe(null);
+      expect(input!.value).toBe("");
+    });
+  });
+
+  describe("prop: options", () => {
+    it("should work when options is object array", () => {
+      const { getByRole, baseElement } = render(
+        <AutoComplete options={mockOptions} />
+      );
+
+      const input = getByRole("textbox");
+      fireEvent.input(input, { target: { value: "1" } });
+      const optionsElements = baseElement.querySelectorAll(
+        ".f-dropdown-option"
+      );
+
+      expect(input.className).toContain("f-autocomplete-input");
+      expect(optionsElements.length).toBe(3);
+    });
+  });
+
+  describe("prop: onFocus", () => {
+    it("show call onFocus when it was focused", () => {
       const handleFocus = jest.fn();
       const { getByRole } = render(<AutoComplete onFocus={handleFocus} />);
 
-      const textarea = getByRole("textbox");
-      textarea.focus();
+      getByRole("textbox").focus();
 
       expect(handleFocus).toHaveBeenCalled();
     });
+  });
 
-    test("prop: onBlur", () => {
+  describe("prop: onBlur", () => {
+    it("show call onBlur when it was blurred", () => {
       const handleBlur = jest.fn();
       const { getByRole } = render(<AutoComplete onBlur={handleBlur} />);
 

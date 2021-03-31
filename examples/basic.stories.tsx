@@ -60,7 +60,6 @@ export function Basic() {
         placeholder="input here"
       />
       <br />
-      <br />
       <AutoComplete
         onFocus={onFocus}
         value={value}

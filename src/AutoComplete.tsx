@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import Portal from "./Portal";
 import Dropdown from "./Dropdown";
 import useSingleton from "./hooks/useSingleton";
-import { OptionData, OptionsType, Option } from "./Option";
+import { OptionData, OptionsType } from "./Option";
 import {
   getPosition,
   onResize,
@@ -307,10 +307,4 @@ const RefAutoComplete = React.forwardRef<
   AutoCompleteProps
 >(AutoComplete);
 
-type RefAutoCompleteWithOption = typeof RefAutoComplete & {
-  Option: typeof Option;
-};
-
-(RefAutoComplete as RefAutoCompleteWithOption).Option = Option;
-
-export default RefAutoComplete as RefAutoCompleteWithOption;
+export default RefAutoComplete;

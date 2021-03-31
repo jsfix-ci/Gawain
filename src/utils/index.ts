@@ -53,8 +53,25 @@ export function isInvalidChild(child: any) {
   );
 }
 
+function toArray(children: React.ReactNode) {
+  let ret: React.ReactNode[] = [];
+  React.Children.forEach(children, (child) => {
+    if (child === undefined || child === null) {
+      return;
+    }
+    if (Array.isArray(child)) {
+      ret = ret.concat(toArray(child));
+    } else {
+      ret.push(child);
+    }
+  });
+
+  return ret;
+}
+
 export function convertChildrenToOption(nodes: React.ReactNode) {
-  const nodesArray = React.Children.toArray(nodes);
+  const nodesArray = toArray(nodes);
+
   return nodesArray
     .map((node) => {
       if (!React.isValidElement(node) || !isOption(node)) {
