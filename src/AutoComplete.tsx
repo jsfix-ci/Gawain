@@ -56,7 +56,7 @@ function AutoComplete(
     children,
     defaultActiveFirstOption = true,
     defaultOpen = false,
-    defaultValue,
+    defaultValue = "",
     disabled = false,
     dropdownClassName,
     dropdownMatchSelectWidth = true,
@@ -87,7 +87,7 @@ function AutoComplete(
     top: -99999,
     width: 200,
   });
-  const [displayValue, setDisplayValue] = useState("");
+  const [displayValue, setDisplayValue] = useState(defaultValue);
 
   useSingleton(() => {
     id.current = getUUID();
@@ -281,7 +281,6 @@ function AutoComplete(
     id: `f-autocomplete-${id.current}`,
     ref: inputRef,
     autoFocus,
-    defaultValue: defaultValue,
     value: isControlMode ? value : displayValue,
     disabled,
     placeholder,
