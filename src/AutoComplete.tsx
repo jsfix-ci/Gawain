@@ -80,6 +80,7 @@ function AutoComplete(
   const inputRef = useRef<HTMLInputElement>(null);
   const hasInit = useRef(false);
   const id = useRef<number>();
+  const optionsRef = useRef(options);
 
   const [dropdownVisible, setDropdownVisible] = useState(defaultOpen);
   const [position, setPosition] = useState({
@@ -92,6 +93,15 @@ function AutoComplete(
   useSingleton(() => {
     id.current = getUUID();
   });
+
+  React.useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    },
+    blur: () => {
+      inputRef.current?.blur();
+    },
+  }));
 
   // 只能在mounted后调用的方法中使用
   const getNodes = () => {
@@ -119,26 +129,19 @@ function AutoComplete(
     }
   };
 
-  React.useImperativeHandle(ref, () => ({
-    focus: () => {
-      inputRef.current?.focus();
-    },
-    blur: () => {
-      inputRef.current?.blur();
-    },
-  }));
+  // ========================== Events Handle ==========================
+  const handleVisible = (visible: boolean) => {
+    if (open && optionsRef.current.length > 0 && !visible) {
+      return;
+    }
+    setDropdownVisible(visible);
+  };
 
-  // ========================== Events Listeners ==========================
-  // 可能和onblur 重复
   const onDocumentMousedown = (event: MouseEvent) => {
     const { target } = event;
     const [inputNode] = getNodes();
-    if (
-      target instanceof Node &&
-      !contains(inputNode, target) &&
-      dropdownVisible
-    ) {
-      setDropdownVisible(false);
+    if (target instanceof Node && !contains(inputNode, target)) {
+      handleVisible(false);
     }
   };
 
@@ -148,14 +151,14 @@ function AutoComplete(
     if (onChange) onChange(value);
     setDisplayValue(value);
     if (!value && dropdownVisible) {
-      setDropdownVisible(false);
+      handleVisible(false);
     } else if (value && !dropdownVisible) {
-      setDropdownVisible(true);
+      handleVisible(true);
     }
   };
 
   const onInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    setDropdownVisible(false);
+    handleVisible(false);
     if (onBlur) onBlur(e);
   };
   const onInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -168,7 +171,7 @@ function AutoComplete(
       options.length > 0 ||
       typeof notFoundContent !== "undefined"
     ) {
-      setDropdownVisible(true);
+      handleVisible(true);
     }
   };
 
@@ -176,26 +179,28 @@ function AutoComplete(
     setDisplayValue(String(value));
     if (onSelect) onSelect(String(value), option);
     if (onChange) onChange(value);
-    setDropdownVisible(false);
+    handleVisible(false);
   };
 
   const onClear = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     setDisplayValue("");
     if (onChange) onChange("");
-    setDropdownVisible(false);
+    handleVisible(false);
   };
 
   // ========================== UI ==========================
   useEffect(() => {
-    // maybe wrong
-    if (open && options.length > 0) {
-      setDropdownVisible(true);
+    if (open && options.length > 0 && !dropdownVisible) {
+      handleVisible(true);
     }
+    optionsRef.current = options;
   }, [open, options]);
 
   useEffect(() => {
     // 如果加上dropdownVisible为true再进行计算，会有错位问题，寻找原因
+    // 原因可能与eventlistner 不获取最新的state有关，只会获取初始值
+    // https://medium.com/geographit/accessing-react-state-in-event-listeners-with-usestate-and-useref-hooks-8cceee73c559
     getDropdownPosition();
   }, []);
 
