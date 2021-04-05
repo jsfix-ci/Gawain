@@ -191,7 +191,7 @@ function AutoComplete(
 
   // ========================== UI ==========================
   useEffect(() => {
-    if (open && options.length > 0 && !dropdownVisible) {
+    if (open && !dropdownVisible && (options.length > 0 || notFoundContent)) {
       handleVisible(true);
     }
     optionsRef.current = options;
@@ -231,6 +231,7 @@ function AutoComplete(
     container.style.top = "0";
     container.style.left = "0";
     container.style.width = "100%";
+    container.className = "f-autocomplete-portal";
     const [, mountNode] = getNodes();
     mountNode.appendChild(container);
     return container;

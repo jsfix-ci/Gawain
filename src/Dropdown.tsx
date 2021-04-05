@@ -80,7 +80,9 @@ export default function Dropdown(props: DropdownProps) {
     dropdownMatchSelectWidth > point.width;
 
   const style: React.CSSProperties = {
-    ...point,
+    top: isNaN(point.top) ? 0 : point.top,
+    left: isNaN(point.left) ? 0 : point.left,
+    width: point.width,
     position: "absolute",
     ...((isValidNumber || !dropdownMatchSelectWidth) && {
       width: isValidNumber ? (dropdownMatchSelectWidth as number) : "auto",
