@@ -16,8 +16,7 @@
     "lint:script": "eslint . --ext '.js,.jsx,.ts,.tsx'",
     "lint:style": "prettier --write src/**",
     "storybook": "start-storybook -p 1231",
-    "build-storybook": "build-storybook",
-    "prepare": "husky install"
+    "build-storybook": "build-storybook"
   },
   "author": "FuZhiCheng",
   "license": "ISC",
