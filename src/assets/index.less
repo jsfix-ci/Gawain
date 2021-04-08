@@ -14,15 +14,13 @@
   &:hover {
     .@{prefix}-clear-icon {
       display: inline-flex;
-    } 
+    }
   }
- 
 }
 .@{prefix} {
   padding: 5px 10px;
   &:disabled {
     cursor: not-allowed;
-
   }
 }
 .@{prefix}-input {
@@ -33,14 +31,14 @@
   overflow: auto;
 }
 
-.@{prefix}-clear-icon{
+.@{prefix}-clear-icon {
   position: absolute;
   top: 50%;
   right: 0;
   transform: translate(-50%, -50%);
   width: 14px;
   height: 14px;
-  background: rgba(0,0,0,.25);
+  background: rgba(0, 0, 0, 0.25);
   border-radius: 100%;
   align-items: center;
   justify-content: center;
@@ -53,7 +51,7 @@
     background: white;
     transform: rotate(45deg);
     &::after {
-      content: '';
+      content: "";
       display: block;
       width: 8px;
       height: 2px;
@@ -65,7 +63,7 @@
 
 // Dropdown
 @dropdown-prefix:~ 'f-dropdown';
-.@{dropdown-prefix}-wrapper{
+.@{dropdown-prefix}-wrapper {
   z-index: 1;
   border: 1px lightgray solid;
   max-height: 150px;
