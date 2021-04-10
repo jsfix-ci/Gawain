@@ -4,5 +4,5 @@ module.exports = {
   testEnvironment: "jsdom",
   // testEnvironment: "node",
   testRegex: "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-  collectCoverage: false,
+  collectCoverage: true,
 };
