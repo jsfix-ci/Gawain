@@ -44,7 +44,7 @@ export function contains(root: Node | null | undefined, n: Node | null) {
 }
 
 function isOption(child: any) {
-  return child?.type && !!child.type.isOption;
+  return child.type && !!child.type.isOption;
 }
 
 export function isInvalidChild(child: any) {

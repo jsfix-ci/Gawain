@@ -6,7 +6,7 @@ import { convertChildrenToOption } from "../src/utils";
 const { Option } = AutoComplete;
 
 describe("Utils", () => {
-  test("convertChildrenToOption", () => {
+  it("convertChildrenToOption", () => {
     const node = (
       <AutoComplete>
         <Option key="1" value="1">

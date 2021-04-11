@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 
-import AutoComplete, { RefAutoCompleteProps, OptionData } from "../src";
+import AutoComplete, { RefAutoCompleteProps, OptionData, Option } from "../src";
 
 describe("<AutoComplete />", () => {
   const mockOptions = [
@@ -9,44 +9,6 @@ describe("<AutoComplete />", () => {
     { label: "23456", value: "23456" },
     { label: "34567", value: "34567" },
   ];
-
-  describe("render", () => {
-    it("with custom Input render perfectly", () => {
-      const { getByRole, container } = render(
-        <AutoComplete
-          options={mockOptions}
-          getPopupContainer={(t) => t.parentNode as HTMLElement}
-        >
-          <textarea />
-        </AutoComplete>
-      );
-
-      const textarea = getByRole("textbox");
-      fireEvent.input(textarea, { target: { value: "1" } });
-      const optionsElements = container.querySelectorAll(".f-dropdown-option");
-
-      expect(textarea.className).toContain("f-autocomplete-textarea");
-      expect(optionsElements.length).toBe(3);
-    });
-
-    it("legacy AutoComplete.Option should be compatiable", () => {
-      const { getAllByRole, baseElement } = render(
-        <AutoComplete>
-          <AutoComplete.Option value="111">111</AutoComplete.Option>
-          <AutoComplete.Option value="222">222</AutoComplete.Option>
-        </AutoComplete>
-      );
-
-      const input = getAllByRole("textbox");
-      fireEvent.input(input[0], { target: { value: "1" } });
-      const optionsElements = baseElement.querySelectorAll(
-        ".f-dropdown-option"
-      );
-
-      expect(input.length).toBe(1);
-      expect(optionsElements.length).toBe(2);
-    });
-  });
 
   describe("prop:allowClear", () => {
     it("should render clear icon when input value", () => {
@@ -87,36 +49,33 @@ describe("<AutoComplete />", () => {
 
       const input = getByRole("textbox");
       fireEvent.input(input, { target: { value: "1" } });
-      const optionsElements = baseElement.querySelectorAll(
-        ".f-dropdown-option"
-      );
 
       expect(input.className).toContain("f-autocomplete-input");
-      expect(optionsElements.length).toBe(3);
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(3);
     });
   });
 
   describe("prop: onFocus", () => {
     it("show call onFocus when it was focused", () => {
-      const handleFocus = jest.fn();
-      const { getByRole } = render(<AutoComplete onFocus={handleFocus} />);
+      const onFocus = jest.fn();
+      const { getByRole } = render(<AutoComplete onFocus={onFocus} />);
 
       getByRole("textbox").focus();
 
-      expect(handleFocus).toHaveBeenCalled();
+      expect(onFocus).toBeCalledTimes(1);
     });
   });
 
   describe("prop: onBlur", () => {
     it("show call onBlur when it was blurred", () => {
-      const handleBlur = jest.fn();
-      const { getByRole } = render(<AutoComplete onBlur={handleBlur} />);
+      const onBlur = jest.fn();
+      const { getByRole } = render(<AutoComplete onBlur={onBlur} />);
 
       const textarea = getByRole("textbox");
       textarea.focus();
       textarea.blur();
 
-      expect(handleBlur).toHaveBeenCalled();
+      expect(onBlur).toBeCalledTimes(1);
     });
   });
 
@@ -144,11 +103,7 @@ describe("<AutoComplete />", () => {
         <AutoComplete defaultOpen options={mockOptions} />
       );
 
-      const optionsElements = baseElement.querySelectorAll(
-        ".f-dropdown-option"
-      );
-
-      expect(optionsElements.length).toBe(3);
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(3);
     });
   });
 
@@ -159,9 +114,10 @@ describe("<AutoComplete />", () => {
       );
 
       fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
-      const wrapper = baseElement.querySelector(".f-dropdown-wrapper");
 
-      expect(wrapper?.className).toContain("test");
+      expect(
+        baseElement.querySelector(".f-dropdown-wrapper")?.className
+      ).toContain("test");
     });
   });
 
@@ -238,7 +194,31 @@ describe("<AutoComplete />", () => {
   });
 
   describe("prop: notFoundContent", () => {
-    it("render notFoundContent when options are empty", () => {
+    it("when notFoundContent is not empty, click input should show the dropdown", () => {
+      const content = <div>Test</div>;
+      const { baseElement, getByRole } = render(
+        <AutoComplete notFoundContent={content} />
+      );
+
+      fireEvent.mouseDown(getByRole("textbox"));
+      const wrapper = baseElement.querySelector(".f-dropdown-wrapper");
+
+      expect(wrapper?.children.length).toBe(1);
+      expect(wrapper?.children[0]).toBeInstanceOf(HTMLDivElement);
+      expect(wrapper?.children[0].innerHTML).toBe("Test");
+    });
+  });
+
+  describe("prop: open", () => {
+    it("when open is true and options is not empty, show the dropdown", () => {
+      const { baseElement } = render(
+        <AutoComplete open options={mockOptions} />
+      );
+
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(3);
+    });
+
+    it("when open is true and notFoundContent is not empty, show the dropdown", () => {
       const content = <div>Test</div>;
       const { baseElement } = render(
         <AutoComplete open notFoundContent={content} />
@@ -263,13 +243,12 @@ describe("<AutoComplete />", () => {
       const options = baseElement.querySelectorAll(".f-dropdown-option");
       fireEvent.mouseDown(options[0]);
 
-      expect(onSelect.mock.calls.length).toBe(1);
-      expect(onSelect.mock.calls[0][0]).toBe("12345");
-      expect(onSelect.mock.calls[0][1]).toEqual({
+      expect(onSelect).toBeCalledTimes(1);
+      expect(onSelect).toBeCalledWith("12345", {
         label: "12345",
         value: "12345",
       });
-      expect(onSelect.mock.results[0].value).toEqual({
+      expect(onSelect).toReturnWith({
         option: { label: "12345", value: "12345" },
         value: "12345",
       });
@@ -278,34 +257,100 @@ describe("<AutoComplete />", () => {
 
   describe("prop: onChange", () => {
     it("input value should call onChange function", () => {
-      const onChange = jest.fn((x) => x);
+      const onChange = jest.fn();
       const { getByRole } = render(
         <AutoComplete options={mockOptions} onChange={onChange} />
       );
 
       fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
 
-      expect(onChange.mock.calls.length).toBe(1);
-      expect(onChange.mock.calls[0][0]).toBe("1");
-      expect(onChange.mock.results[0].value).toBe("1");
+      expect(onChange).toBeCalledTimes(1);
+      expect(onChange).toBeCalledWith("1");
     });
 
     it("select an option should call onChange function", () => {
-      const onChange = jest.fn((value) => value);
-      const { getByRole } = render(
+      const onChange = jest.fn();
+      const { getByRole, baseElement } = render(
         <AutoComplete options={mockOptions} onChange={onChange} />
       );
 
       fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
+      const options = baseElement.querySelectorAll(".f-dropdown-option");
+      fireEvent.mouseDown(options[0]);
 
-      expect(onChange.mock.calls.length).toBe(1);
+      expect(onChange).toBeCalledTimes(2);
       expect(onChange.mock.calls[0][0]).toBe("1");
-      expect(onChange.mock.results[0].value).toBe("1");
+      expect(onChange.mock.calls[1][0]).toBe("12345");
+    });
+
+    it("clear value should call onChange function", () => {
+      const onChange = jest.fn();
+      const { container, getByRole } = render(
+        <AutoComplete onChange={onChange} allowClear options={mockOptions} />
+      );
+
+      fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
+      const clearIcon = container.querySelector(".f-autocomplete-clear-icon");
+      clearIcon && fireEvent.mouseDown(clearIcon);
+
+      expect(onChange).toBeCalledTimes(2);
+      expect(onChange.mock.calls[0][0]).toBe("1");
+      expect(onChange.mock.calls[1][0]).toBe("");
+    });
+  });
+
+  describe("prop: onDropdownVisibleChange", () => {
+    it("visible change show call onDropdownVisibleChange function", () => {
+      const onDropdownVisibleChange = jest.fn();
+      const { getByRole } = render(
+        <AutoComplete
+          options={mockOptions}
+          onDropdownVisibleChange={onDropdownVisibleChange}
+        />
+      );
+
+      fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
+
+      expect(onDropdownVisibleChange).toBeCalledTimes(1);
+      expect(onDropdownVisibleChange).toBeCalledWith(true);
+    });
+  });
+
+  describe("render", () => {
+    it("with custom Input render perfectly", () => {
+      const { getByRole, container } = render(
+        <AutoComplete
+          options={mockOptions}
+          getPopupContainer={(t) => t.parentNode as HTMLElement}
+        >
+          <textarea />
+        </AutoComplete>
+      );
+
+      const textarea = getByRole("textbox");
+      fireEvent.input(textarea, { target: { value: "1" } });
+
+      expect(textarea.className).toContain("f-autocomplete-textarea");
+      expect(container.querySelectorAll(".f-dropdown-option").length).toBe(3);
+    });
+
+    it("legacy AutoComplete.Option should be compatiable", () => {
+      const { getByRole, baseElement } = render(
+        <AutoComplete>
+          <AutoComplete.Option value="111">111</AutoComplete.Option>
+          <AutoComplete.Option value="222">222</AutoComplete.Option>
+          <Option value="333">333</Option>
+        </AutoComplete>
+      );
+
+      fireEvent.input(getByRole("textbox"), { target: { value: "1" } });
+
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(3);
     });
   });
 
   describe("ref", () => {
-    test("child.ref instance should support be focused and blurred", () => {
+    it("child.ref instance should support be focused and blurred", () => {
       let inputRef: RefAutoCompleteProps | null = null;
       render(
         <AutoComplete
@@ -318,6 +363,53 @@ describe("<AutoComplete />", () => {
 
       expect(typeof inputRef!.focus).toBe("function");
       expect(typeof inputRef!.blur).toBe("function");
+    });
+
+    it("call ref.focus should focus input and call ref.blur show blur", () => {
+      let inputRef: RefAutoCompleteProps | null = null;
+      const onFocus = jest.fn();
+      const onBlur = jest.fn();
+      render(
+        <AutoComplete
+          onFocus={onFocus}
+          onBlur={onBlur}
+          options={[]}
+          ref={(node) => {
+            inputRef = node;
+          }}
+        />
+      );
+
+      inputRef!.focus();
+      inputRef!.blur();
+
+      expect(onFocus).toBeCalledTimes(1);
+      expect(onFocus.mock.calls[0][0].nativeEvent).toBeInstanceOf(FocusEvent);
+      expect(onBlur).toBeCalledTimes(1);
+      expect(onBlur.mock.calls[0][0].nativeEvent).toBeInstanceOf(FocusEvent);
+    });
+  });
+
+  describe("dropdown", () => {
+    it("when options is not empty, click input should show dropdown", () => {
+      const { getByRole, baseElement } = render(
+        <AutoComplete options={mockOptions} />
+      );
+
+      fireEvent.mouseDown(getByRole("textbox"));
+
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(3);
+    });
+
+    it("delete defaultValue should close dropdown", () => {
+      const { getByRole, baseElement } = render(
+        <AutoComplete options={mockOptions} defaultValue="2" />
+      );
+
+      fireEvent.mouseDown(getByRole("textbox"));
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(3);
+      fireEvent.input(getByRole("textbox"), { target: { value: "" } });
+      expect(baseElement.querySelectorAll(".f-dropdown-option").length).toBe(0);
     });
   });
 });

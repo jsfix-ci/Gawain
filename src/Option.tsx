@@ -1,10 +1,12 @@
 import * as React from "react";
 
-export interface OptionData {
+interface OptionCoreData {
   key?: string | number;
   label?: React.ReactNode;
   disabled?: boolean;
   value: string | number;
+}
+export interface OptionData extends OptionCoreData {
   [index: string]: any;
 }
 
@@ -16,7 +18,7 @@ export interface OptionGroup {
 
 export type OptionsType = (OptionData | OptionGroup)[];
 
-interface OptionProps extends Omit<OptionData, "label"> {
+interface OptionProps extends Omit<OptionCoreData, "label"> {
   children: React.ReactNode;
   [prop: string]: any;
 }
