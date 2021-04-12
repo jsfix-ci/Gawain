@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
-import AutoComplete from "../src";
+import AutoComplete, { OptionData } from "../src";
 
 export default {
   title: "AutoComplete",
@@ -44,7 +44,7 @@ const searchResult = (query: string) =>
     });
 
 export const UnCertainCategory = () => {
-  const [options, setOptions] = useState<any[]>([]);
+  const [options, setOptions] = useState<OptionData[]>([]);
 
   const handleSearch = (value: string) => {
     setOptions(value ? searchResult(value) : []);

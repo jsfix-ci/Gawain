@@ -19,7 +19,6 @@ const mockVal = (str: string, repeat = 1) => {
 
 export function APIShow() {
   const [options, setOptions] = useState<{ value: string }[]>([]);
-  const [value, setValue] = useState<number | string>("");
 
   const onSearch = (searchText: string) => {
     action("onSearch")(searchText);
@@ -43,7 +42,6 @@ export function APIShow() {
 
   const onChange = (data: string | number) => {
     action("onChange")(data);
-    setValue(data);
   };
 
   return (
