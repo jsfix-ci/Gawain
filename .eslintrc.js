@@ -7,6 +7,13 @@ module.exports = {
     jest: true,
   },
   parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2020,
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true,
+    },
+  },
   plugins: ["react", "react-hooks", "@typescript-eslint"],
   extends: [
     "alloy",
@@ -19,9 +26,6 @@ module.exports = {
     react: {
       version: "detect",
     },
-  },
-  globals: {
-    // 这里填入你的项目需要的全局变量
   },
   rules: {
     // "react-hooks/exhaustive-deps": "warn",

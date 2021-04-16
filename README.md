@@ -1,8 +1,4 @@
-## AutoComplete
-
-参考 Antd 中的 AutoComplete
-
-LeetCode Hire 中的题 4 与题 5
+## cc-autocomplete
 
 ## API
 

@@ -1,7 +1,5 @@
 import * as React from "react";
-import { UserOutlined } from "@ant-design/icons";
 
-import "./demo.less";
 import AutoComplete from "../src";
 
 export default {
@@ -33,9 +31,7 @@ const renderItem = (title: string, count: number) => ({
       }}
     >
       {title}
-      <span>
-        <UserOutlined /> {count}
-      </span>
+      <span>{count}</span>
     </div>
   ),
 });

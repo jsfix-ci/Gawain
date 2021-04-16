@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
-import "./demo.less";
-import "../src/assets/index.less";
+import "../assets/index.less";
 import AutoComplete from "../src";
 
 export default {

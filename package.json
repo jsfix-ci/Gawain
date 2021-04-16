@@ -1,40 +1,42 @@
 {
-  "name": "c.c.",
-  "version": "2.0.0",
-  "description": "code template",
-  "main": "index.tsx",
+  "name": "cc-autocomplete",
+  "version": "1.0.0",
+  "description": "React Autocomplete",
+  "main": "./lib/index.js",
+  "module": "./es/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "assets/*.less",
+    "es",
+    "lib"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YagamiLight126/C.C..git"
+    "url": "git+https://github.com/YagamiLight126/cc-autocomplete.git"
   },
   "scripts": {
+    "prepublishOnly": "npm run build",
+    "prepare": "husky install",
     "test": "jest",
-    "test:watch": "jest --watch",
-    "build": "webpack --config scripts/webpack.prod.js",
-    "start": "webpack serve --config scripts/webpack.dev.js --progress",
+    "build:esm": "tsc --module es2015 --outDir es --declarationDir es",
+    "build:cjs": "tsc --module CommonJS --outDir lib --declarationDir lib",
+    "build": "npm run build:esm && npm run build:cjs",
+    "start": "start-storybook -p 1231",
     "lint": "npm run lint:script  && npm run lint:style",
     "lint:script": "eslint . --ext '.js,.jsx,.ts,.tsx'",
     "lint:style": "prettier --write src/**",
-    "storybook": "start-storybook -p 1231",
     "build-storybook": "build-storybook"
   },
   "author": "FuZhiCheng",
-  "license": "ISC",
-  "homepage": "https://github.com/YagamiLight126/C.C..git",
-  "dependencies": {
-    "classnames": "^2.3.1",
+  "license": "MIT",
+  "peerDependencies": {
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
+  "dependencies": {
+    "classnames": "^2.3.1"
+  },
   "devDependencies": {
-    "@ant-design/icons": "^4.6.2",
-    "@babel/core": "^7.13.14",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/plugin-proposal-object-rest-spread": "^7.13.8",
-    "@babel/plugin-transform-runtime": "^7.13.10",
-    "@babel/preset-env": "^7.13.12",
-    "@babel/preset-react": "^7.13.13",
-    "@babel/preset-typescript": "^7.12.7",
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.1",
     "@storybook/addon-actions": "^6.2.2",
@@ -48,8 +50,6 @@
     "@types/react-dom": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
-    "babel-eslint": "^10.1.0",
-    "babel-plugin-import": "^1.13.3",
     "eslint": "^7.23.0",
     "eslint-config-alloy": "^3.10.0",
     "eslint-config-prettier": "^8.0.0",
@@ -64,12 +64,13 @@
     "react-test-renderer": "^17.0.2",
     "ts-jest": "^26.5.4",
     "ts-node": "^9.1.1",
+    "tslib": "^2.2.0",
     "typescript": "^4.2.3"
   },
   "lint-staged": {
     "*.{js,ts,tsx,jsx}": "eslint --fix",
     "*.{js,css,md,ts,tsx}": "prettier --write",
-    "*.js": "eslint --cache --fix",
+    "*.js": "eslint --fix",
     "*.{js,css,md}": "prettier --write"
   },
   "commitlint": {

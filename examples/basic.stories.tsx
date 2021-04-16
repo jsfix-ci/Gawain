@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
+import "../assets/index.less";
 import AutoComplete from "../src";
-import "../src/assets/index.less";
 
 export default {
   title: "AutoComplete",

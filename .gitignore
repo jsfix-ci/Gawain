@@ -3,3 +3,7 @@
 .DS_Store
 examples/site-19.stories.tsx
 /coverage
+.vscode
+/lib
+/es
+/build

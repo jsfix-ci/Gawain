@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React, { useState } from "react";
 
-import "../src/assets/index.less";
+import "../assets/index.less";
 import AutoComplete, { Option } from "../src";
 
 export default {

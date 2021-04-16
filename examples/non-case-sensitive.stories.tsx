@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import React from "react";
 
-import "../src/assets/index.less";
+import "../assets/index.less";
 import AutoComplete, { OptionData } from "../src";
 
 export default {

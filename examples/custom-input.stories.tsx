@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { action } from "@storybook/addon-actions";
 
-import "../src/assets/index.less";
+import "../assets/index.less";
 import AutoComplete from "../src";
 
 // This default export determines where your story goes in the story list
