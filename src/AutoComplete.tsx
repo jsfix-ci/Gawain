@@ -1,9 +1,11 @@
 import classNames from "classnames";
+import { map, switchMap, tap } from "rxjs/operators";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import Portal from "./Portal";
 import Dropdown from "./Dropdown";
 import useSingleton from "./hooks/useSingleton";
+import useRxInput from "./hooks/useRxInput";
 import { OptionData, OptionsType } from "./Option";
 import {
   getPosition,
@@ -38,8 +40,10 @@ export interface AutoCompleteProps {
   onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
   onSearch?: (value: string) => void;
   onSelect?: (value: string, option: OptionData) => void;
+  onRemoteFetch?: (response: any) => void;
   style?: React.CSSProperties;
   visible?: boolean;
+  rx?: boolean;
 }
 export interface RefAutoCompleteProps {
   focus: () => void;
@@ -72,8 +76,10 @@ function AutoComplete(
     onSearch,
     onSelect,
     onChange,
+    onRemoteFetch,
     style,
     value,
+    rx,
   } = props;
 
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -89,6 +95,7 @@ function AutoComplete(
     width: 200,
   });
   const [displayValue, setDisplayValue] = useState(defaultValue);
+  const [warning, setWarning] = useState(false);
 
   useSingleton(() => {
     id.current = getUUID();
@@ -128,6 +135,31 @@ function AutoComplete(
       setPosition(getPosition(inputNode, mountNode));
     }
   };
+
+  useEffect(() => {
+    if (rx) {
+      const [inputNode] = getNodes();
+      const [valid$, invalid$, data$] = useRxInput(inputNode);
+
+      const validInput = valid$.pipe(
+        tap(() => {
+          setWarning(false);
+        }),
+        map((v) => v[0].toUpperCase()),
+        switchMap((v) => data$(v)),
+        tap(onRemoteFetch)
+      );
+
+      const invalidInput = invalid$.pipe(
+        tap((isEmpty) => {
+          !isEmpty && setWarning(true);
+        })
+      );
+
+      validInput.subscribe();
+      invalidInput.subscribe();
+    }
+  }, []);
 
   // ========================== Events Handle ==========================
   const handleVisible = (visible: boolean) => {
@@ -271,6 +303,8 @@ function AutoComplete(
       </div>
     ) : null;
 
+  const warningInfo = <span style={{ color: "red" }}>您输入的字数过多</span>;
+
   let displayInputNode = isInvalidChild(children) ? (
     <input />
   ) : (
@@ -300,6 +334,7 @@ function AutoComplete(
     <div style={style}>
       <div className="f-autocomplete-input-wrapper" ref={wrapperRef}>
         {displayInputNode}
+        {warning && warningInfo}
         {clearIcon}
       </div>
       {dropdown}
