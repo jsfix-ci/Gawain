@@ -27,6 +27,7 @@ module.exports = {
       version: "detect",
     },
   },
+  ignorePatterns: ["/es", "/coverage", "/lib", "/node_modules"],
   rules: {
     // "react-hooks/exhaustive-deps": "warn",
     "no-console": "error",
