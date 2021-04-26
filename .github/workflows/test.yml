@@ -1,12 +1,19 @@
-name: test
-on: [push]
+name: Test
+on: 
+  push:
+    branches:
+      - dev
 
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '15'
+          check-latest: true,
+          registry-url: https://registry.npmjs.org/
       - run: npm install
       - run: npm run lint
       - run: npm run test
