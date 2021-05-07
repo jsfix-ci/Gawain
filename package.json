@@ -16,7 +16,7 @@
   },
   "scripts": {
     "prepublishOnly": "npm run build",
-    "prepare": "husky install",
+    "postinstall": "husky install",
     "rx:mock": "node ./examples/mock/server.js",
     "test": "jest",
     "build:esm": "rm -rf es && tsc --module es2015 --outDir es --declarationDir es",

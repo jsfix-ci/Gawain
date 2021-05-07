@@ -139,7 +139,7 @@ function AutoComplete(
   useEffect(() => {
     if (rx) {
       const [inputNode] = getNodes();
-      const [valid$, invalid$, data$] = useRxInput(inputNode);
+      const [valid$, invalid$, data$, stop] = useRxInput(inputNode);
 
       const validInput = valid$.pipe(
         tap(() => {
@@ -158,6 +158,7 @@ function AutoComplete(
 
       validInput.subscribe();
       invalidInput.subscribe();
+      return stop;
     }
   }, []);
 

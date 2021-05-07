@@ -8,9 +8,13 @@ export default function useRxInput(
 ): [
   Rx.Observable<string>,
   Rx.Observable<boolean>,
-  (value: string) => Rx.Observable<any>
+  (value: string) => Rx.Observable<any>,
+  () => void
 ] {
+  const stop$ = new Rx.Subject<void>();
+
   const debouncedEvent = Rx.fromEvent<InputEvent>(inputNode, "input").pipe(
+    takeUntil(stop$),
     debounceTime(500),
     map((e) => (e.target as HTMLInputElement).value)
   );
@@ -30,5 +34,10 @@ export default function useRxInput(
       takeUntil(invalid$)
     );
 
-  return [valid$, invalid$, data$];
+  function stop() {
+    stop$.next();
+    stop$.complete();
+  }
+
+  return [valid$, invalid$, data$, stop];
 }
