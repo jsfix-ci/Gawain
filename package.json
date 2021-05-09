@@ -19,14 +19,14 @@
     "postinstall": "husky install",
     "rx:mock": "node ./examples/mock/server.js",
     "test": "jest",
+    "coverage": "jest && open ./coverage/lcov-report/index.html",
     "build:esm": "rm -rf es && tsc --module es2015 --outDir es --declarationDir es",
     "build:cjs": "rm -rf lib && tsc --module CommonJS --outDir lib --declarationDir lib",
     "build": "npm run build:esm && npm run build:cjs",
     "start": "start-storybook -p 1231",
     "lint": "npm run lint:script  && npm run lint:style",
     "lint:script": "eslint . --ext '.js,.jsx,.ts,.tsx'",
-    "lint:style": "prettier --write src/**",
-    "build-storybook": "build-storybook"
+    "lint:style": "prettier --write src/**"
   },
   "author": "FuZhiCheng",
   "license": "MIT",
