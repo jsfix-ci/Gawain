@@ -1,5 +1,6 @@
+import * as Rx from "rxjs";
 import classNames from "classnames";
-import { map, switchMap, tap } from "rxjs/operators";
+import { map, switchMap, tap, filter, takeUntil } from "rxjs/operators";
 import React, { useState, useRef, useEffect, useMemo } from "react";
 
 import Portal from "./Portal";
@@ -139,18 +140,24 @@ function AutoComplete(
   useEffect(() => {
     if (rx) {
       const [inputNode] = getNodes();
-      const [valid$, invalid$, data$, stop] = useRxInput(inputNode);
+      const source$ = Rx.fromEvent<InputEvent>(inputNode, "input");
+      const [getDebounced$, data$, stop] = useRxInput();
 
-      const validInput = valid$.pipe(
+      const debounced$ = getDebounced$(source$);
+
+      const validInput = debounced$.pipe(
+        filter((v) => v.length <= 5 && v.length !== 0),
         tap(() => {
           setWarning(false);
         }),
         map((v) => v[0].toUpperCase()),
-        switchMap((v) => data$(v)),
-        tap(onRemoteFetch)
+        switchMap((v) => data$(v).pipe(takeUntil(invalidInput))),
+        tap((v) => onRemoteFetch?.(v))
       );
 
-      const invalidInput = invalid$.pipe(
+      const invalidInput = debounced$.pipe(
+        filter((v) => v.length > 5 || v.length === 0),
+        map((v) => v.length === 0),
         tap((isEmpty) => {
           !isEmpty && setWarning(true);
         })

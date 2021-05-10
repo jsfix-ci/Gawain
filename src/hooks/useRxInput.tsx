@@ -1,37 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import * as Rx from "rxjs";
 import { fromFetch } from "rxjs/fetch";
-import { debounceTime, takeUntil, filter, map, mergeMap } from "rxjs/operators";
+import { debounceTime, takeUntil, map, switchMap } from "rxjs/operators";
 
-export default function useRxInput(
-  inputNode: HTMLElement
-): [
-  Rx.Observable<string>,
-  Rx.Observable<boolean>,
+export default function useRxInput(): [
+  (source: Rx.Observable<InputEvent>) => Rx.Observable<string>,
   (value: string) => Rx.Observable<any>,
   () => void
 ] {
   const stop$ = new Rx.Subject<void>();
 
-  const debouncedEvent = Rx.fromEvent<InputEvent>(inputNode, "input").pipe(
-    takeUntil(stop$),
-    debounceTime(500),
-    map((e) => (e.target as HTMLInputElement).value)
-  );
-
-  const valid$ = debouncedEvent.pipe(
-    filter((v) => v.length <= 5 && v.length !== 0)
-  );
-
-  const invalid$ = debouncedEvent.pipe(
-    filter((v) => v.length > 5 || v.length === 0),
-    map((v) => v.length === 0)
-  );
+  const getDebounced$ = (source: Rx.Observable<InputEvent>) =>
+    source.pipe(
+      debounceTime(500),
+      map((e) => (e.target as HTMLInputElement).value),
+      takeUntil(stop$)
+    );
 
   const data$ = (value: string) =>
     fromFetch(`http://localhost:3000/city?title=${value}`).pipe(
-      mergeMap((res) => res.json()),
-      takeUntil(invalid$)
+      switchMap((res) => {
+        if (res.ok) return res.json();
+        return Rx.throwError(() => new Error("could not fetch"));
+      })
     );
 
   function stop() {
@@ -39,5 +30,5 @@ export default function useRxInput(
     stop$.complete();
   }
 
-  return [valid$, invalid$, data$, stop];
+  return [getDebounced$, data$, stop];
 }
