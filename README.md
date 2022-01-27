@@ -1,6 +1,6 @@
 ## Gawain
 
-react autoComplete and tsx component starter
+React + Typescript component starter
 
 ## API
 
@@ -31,6 +31,4 @@ react autoComplete and tsx component starter
 | onSearch                    | 搜索补全项的时候调用                                                                                 | (value:string) => void                                                        | -                   | ✔    |
 | onSelect                    | 被选中时调用，参数为选中项的 value 值                                                                | function(value, option)                                                       | -                   | ✔    |
 
-## TODO
-
-1. 补充 Rx 代码的测试
+## lib
