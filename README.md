@@ -30,5 +30,3 @@ React + Typescript component starter
 | onFocus                     | 获得焦点时的回调                                                                                     | function(event)                                                               | -                   | ✔    |
 | onSearch                    | 搜索补全项的时候调用                                                                                 | (value:string) => void                                                        | -                   | ✔    |
 | onSelect                    | 被选中时调用，参数为选中项的 value 值                                                                | function(value, option)                                                       | -                   | ✔    |
-
-## lib
